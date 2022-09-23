@@ -1,0 +1,7 @@
+# tools
+.gradle/
+.idea/
+
+# project
+build/
+out/

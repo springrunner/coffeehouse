@@ -1,0 +1,10 @@
+rootProject.name = 'coffeehouse'
+
+include 'customer-app', 'store-app'
+project(":customer-app").projectDir = file("coffeehouse-apps/customer-app")
+project(":store-app").projectDir = file("coffeehouse-apps/store-app")
+
+include 'user-service', 'order-service', 'brew-service'
+project(":user-service").projectDir = file("coffeehouse-services/user-service")
+project(":order-service").projectDir = file("coffeehouse-services/order-service")
+project(":brew-service").projectDir = file("coffeehouse-services/brew-service")
