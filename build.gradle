@@ -1,21 +1,39 @@
 plugins {
+    id 'java'
     id 'org.springframework.boot' version '2.7.4'
     id 'io.spring.dependency-management' version '1.0.14.RELEASE'
     id 'com.diffplug.spotless' version '6.11.0'
-    id 'java'
 }
 
-configure(subprojects) {
-    apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'com.diffplug.spotless'
-    apply plugin: 'java'
+ext {
+    viteProjects = [project(':customer-app'), project(':store-app')]
+    springProjects = [project(':user-service'), project(':order-service'), project(':brew-service')]
+}
 
+configure(allprojects) {
     group = 'dev.springrunner'
     version = '0.0.1-SNAPSHOT'
 
     repositories {
         mavenCentral()
     }
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 0, 'seconds'
+            cacheDynamicVersionsFor 0, 'seconds'
+        }
+    }
+}
+
+configure(viteProjects) {
+
+}
+
+configure(springProjects) {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'com.diffplug.spotless'
 
     dependencyManagement {
         imports {
@@ -56,31 +74,7 @@ configure(subprojects) {
     compileJava.options.encoding = 'UTF-8'
 }
 
-project(':customer-app') {
-    apply plugin: 'org.springframework.boot'
-
-    dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter-web'
-        developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    }
-}
-
-project(':store-app') {
-    apply plugin: 'org.springframework.boot'
-
-    dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter-web'
-        developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    }
-}
-
 project(':user-service') {
-    apply plugin: 'org.springframework.boot'
-
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -91,8 +85,6 @@ project(':user-service') {
 }
 
 project(':order-service') {
-    apply plugin: 'org.springframework.boot'
-
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -103,8 +95,6 @@ project(':order-service') {
 }
 
 project(':brew-service') {
-    apply plugin: 'org.springframework.boot'
-
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         developmentOnly 'org.springframework.boot:spring-boot-devtools'

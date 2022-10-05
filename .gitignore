@@ -1,7 +1,17 @@
 # tools
 .gradle/
+.vscode
 .idea/
 
 # project
 build/
+
+node_modules/
+dist/
+dist-ssr/
+*.local
+
 out/
+
+# etc
+.DS_Store
