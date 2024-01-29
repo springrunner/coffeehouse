@@ -1,8 +1,37 @@
-# Real-World Software Development: A Project-Driven Guide to Spring Applications
+Building modular monolith using spring
+===
 
-> 이 저장소는 실제 세계의 복잡한 요구 사항을 충족시키는 스프링 애플리케이션 개발을 탐구하는 곳입니다.
+이 저장소는 [Spring](https://spring.io/projects)을 기반으로 한 모듈형 모노리스 시스템의 설계와 구현을 보여주기 위해 만들어졌습니다.
 
-"커피하우스 시스템" 개발이라는 가상의 프로젝트를 중심으로 발생하는 다양한 기술적 도전을 경험하고, 이를 해결하기 위한 실용적인 접근 방법을 제공하고자 합니다. 이 저장소를 통해 이론적 지식과 실제 적용 사이의 간극을 메우고자 하는 소프트웨어 엔지니어에게 귀중한 자원이 되기를 바랍니다.
+### 다루는 내용
+
+이 저장소에서 다루는 주요 주제는 다음과 같습니다:
+
+- 모듈 방식으로 모노리스 시스템을 구현하는 방법을 제시합니다.
+- 소프트웨어 설계 원칙과 디자인 패턴, 객제지향 기술의 모범 사례를 활용합니다.
+- 도메인 주도 설계가 제안하는 전략적, 전술적 설계를 활용합니다.
+- 운영 환경에서 바로 실행할 수 있는 수준의 완성된 코드 제공합니다.
+- API-first 접근 방식을 채택하여, 모든 기능 개발을 API 설계와 구현을 선행하는 방식으로 진행합니다.
+
+### 다루지 않는 내용
+
+이 저장소에서는 다음 주제들을 다루지 않습니다:
+
+- 비즈니스 요구 사항의 수집 및 분석
+- 아키텍처 평가 및 품질 속성 분석
+- 인프라, 컨테이너화
+- 배포 프로세스
+- 문서화
+
+## 알림
+
+소프트웨어 아키텍처 결정에는 기능 요구 사항, 품질 수준, 기술적 제약뿐만 아니라 조직의 선호, 경험, 비용 등 다양한 요소가 고려됩니다. 따라서 이 저장소에서 제시된 아키텍처와 구현 방법은 다양한 문제를 해결할 수 있는 여러 방법의 하나일 뿐입니다.
+
+이 저장소의 코드를 필요에 따라 자유롭게 사용하셔도 좋지만, 여러분의 상황에 가장 적합한 해결책을 찾아 선택하는 것이 중요합니다.
+
+이 프로젝트에서 우리가 집중하는 것은 코드의 품질입니다. 고품질 코드를 만들기 위해선 상당한 분석, 연구, 그리고 노력이 필요합니다. 그러니 이 프로젝트가 마음에 드시거나 유용하셨다면, 별(⭐)을 주세요! 이는 우리가 이 저장소를 관리하는 데 있어 큰 동기부여가 됩니다. 감사합니다.
+
+> _이 프로젝트는 [Modular Monolith with DDD](https://github.com/kgrzybek/modular-monolith-with-ddd)에서 영감을 받아 시작되었습니다._
 
 ## 도메인 Domain
 
@@ -38,8 +67,8 @@
 ### 도메인 모델 Domain Model
 
 > [!NOTE]
-> 도메인 모델은 객체들이 도메인 논리를 표현하고 구현하는 방식으로 모델에는 업무 규칙을 나타내는 객체와, 그 업무 규칙을 처리하면서 필요한 데이터를 포함하는 객체가 혼재되어 있다. 이 객체들이 서로 상호작용하며
-> 도메인 논리를 처리한다.
+> 도메인 모델은 객체들이 도메인 논리를 표현하고 구현하는 방식으로 모델에는 업무 규칙을 나타내는 객체와, 
+> 그 업무 규칙을 처리하면서 필요한 데이터를 포함하는 객체가 혼재되어 있다. 이 객체들이 서로 상호작용하며 도메인 논리를 처리한다.
 >
 > [도서, 엔터프라이즈 애플리케이션 아키텍처 패턴](https://martinfowler.com/books/eaa.html)
 
@@ -168,6 +197,112 @@ classDiagram
     OrderSheet "1" o-- "many" Notification : triggers >
 ```
 
+## 구현 Implement
+
+### 아키텍처 Architecture
+
+#### 원칙
+
+시스템은 다양한 외부요소로 지속해서 영향받아 변할 수밖에 없습니다. 시스템 구조를 바꾸는 것이 쉬운 건 아니지만, 환경에 적응할 수 있는 시스템을 개발해야 합니다.
+
+> [!IMPORTANT]
+> 좋은 아키텍처는 시스템이 모노리틱 구조로 태어나서 단일 파일로 배포되더라도, 이후에는 독립적으로 배포 가능한 단위들의 집합으로 성장하고, 
+> 또 독립적인 서비스나 마이크로서비스 수준까지 성장할 수 있도록 만들어져야 한다. 
+> 또한 좋은 아키텍처라면 나중에 상황이 바뀌었을 때 이 진행 방향을 거꾸로 돌려 원래 형태인 모노리틱 구조로 되돌릴 수도 있어야 한다.
+>
+> [도서, 클린 아키텍처](https://ebook.insightbook.co.kr/book/69)
+
+#### 모듈형 모노리스 Modular Monolith
+
+> 한줄요약, 모노리스는 정확히 하나의 배포 단위가 있는 시스템에 지나지 않습니다. 그 이상도 이하도 아닙니다.
+>
+> [Article, MODULAR MONOLITH: A PRIMER](https://www.kamilgrzybek.com/blog/posts/modular-monolith-primer)
+
+[모노리스(Monolith)](https://en.wikipedia.org/wiki/Monolithic_system) 방식은 소프트웨어 개발에서 한 개의 단일, 통합된 애플리케이션으로 전체 서비스의 기능을 구현하는 접근 방법입니다.
+
+모노리스의 주요 특징은 다음과 같습니다:
+
+- 단순성: 단일 코드 베이스와 개발 환경을 사용하기 때문에, 개발, 배포 및 관리가 상대적으로 단순합니다.
+- 개발 용이성: 새로운 개발자가 프로젝트에 참여할 때, 전체 시스템의 구조를 이해하기가 비교적 용이합니다.
+- 배포 용이성: 모든 서비스 구성요소가 하나의 애플리케이션으로 묶여 있기 때문에, 배포 과정이 간단하고 명확합니다.
+
+모노리스 방식은 애플리케이션이 성장함에 따라 복잡성이 증가하고, 이에 따라 유지보수와 확장성에 어려움을 겪을 수도 있습니다. 크기가 크고 복잡한 시스템에서는 작은 변경 사항이라도 전체 시스템의 재빌드와 배포를 요구할 수 있으며, 이는 개발 속도를 저하시키고 운영 리스크를 증가시킬 수 있습니다. 그럼에도 불구하고, 프로젝트의 규모가 작거나 중간 정도일 때, 혹은 단일한 팀이 전체 애플리케이션을 관리 할 수 있을 때 모노리스 방식은 여전히 유용한 접근 방법입니다.
+
+> [!TIP]
+> Microservices are a useful architecture, but even their advocates say that using them incurs a significant
+> MicroservicePremium, which means they are only useful with more complex systems. This premium, essentially 
+> the cost of managing a suite of services, will slow down a team, favoring a monolith for simpler applications.
+>
+> [Article, Monolith First](https://martinfowler.com/bliki/MonolithFirst.html)
+
+##### 모듈화 Modularization
+
+단일 코드 베이스에서 시스템의 규모가 커질수록 소프트웨어의 복잡성이 증가합니다. 이러한 복잡성을 관리하기 위해 소프트웨어의 구조를 한눈에 파악할 수 있도록 명확한 경계를 설정하는 것이 필요합니다. 이 과정을 `모듈화 Modularization`라고 부릅니다. 소프트웨어는 물리적 형태가 없기 때문에 구조를 단순화하려면 서로 관련성이 높은 클래스들을 논리적 단위로 통합해야 합니다. 이렇게 관련된 클래스 집합을 하나의 논리적 단위로 결합하는 구성 요소를 `모듈 module`이라고 합니다.
+
+즉, 모듈화는 큰 단일 코드 베이스를 더 작은 캡슐화된 기능 단위로 분할하고, 이렇게 분할된 작은 단위들이 서로 협력하여 전체 기능을 수행하게 하는 과정입니다. 모듈은 외부 사용을 위한 API를 제공하며, 자신이 작동하는 데 필요한 모든 요소를 포함해야 합니다. 또한, 모듈은 독립적으로 테스트 가능해야 하며, 다른 모듈과의 의존성은 최소화하는 것이 바람직합니다.
+
+자바에서는 `패키지 package`를 사용해 모듈을 만들 수 있으며, 빌드 도구인 그레이들(Gradle)을 사용해서 단일 저장소에서 멀티프로젝트(multi-project)로 모듈을 구성할 수도 있습니다.
+
+##### 수직 슬라이스 Vertical Slice
+
+수직 슬라이스는 모노리스를 단일 프로세스 내에서 배포되는 일련의 작은 애플리케이션처럼 바라보는 아이디어에서 출발합니다. 이 접근법을 성공적으로 적용하기 위해서는 도메인에 대한 깊은 이해와 명확한 경계 식별이 필요합니다. 이 과정에는 도메인 주도 설계(Domain-Driven Design)와 이벤트 스토밍(Event Storming) 등의 기법이 활용될 수 있습니다.
+
+![Vertical Slice Architecture](https://www.milanjovanovic.tech/blogs/mnw_062/vertical_slice_architecture.png?imwidth=3840)
+
+- 수직 슬라이스는 모노리스 내에서 독립적인 비즈니스 기능 단위로 구성됩니다. 이러한 수직 슬라이스를 그룹화하여 모듈로 만들 수 있습니다. 이 접근 방식은 모듈이 기술적인 측면보다는 비즈니스 가치에 중점을 둘 수 있도록 합니다.
+- 각 모듈은 특정 비즈니스 기능을 완전히 지원하기 위해 필요한 기능과 데이터를 자체적으로 포함하며, 이는 모듈이 비즈니스 목적 달성을 위해 필요한 모든 요소를 포함하고 있음을 보장합니다.
+- 모듈 간 통신은 이벤트와 알림을 통해 서로의 상태 변경을 비동기적으로 통지함으로써 이루어지며, 필요에 따라 동기식 통신도 인터페이스를 통해 최소한의 의존성으로 진행됩니다. 이 접근 방식은 각 모듈의 독립성과 자율성을 유지하며 모듈 간의 강한 결합을 방지합니다.
+
+이 접근법을 통해, 각 모듈은 마치 독립적인 소규모 애플리케이션처럼 기능하여 시스템 전체의 유연성과 확장성을 향상시킵니다. 이는 비즈니스 기능의 변경이 빈번히 발생하는 현대의 소프트웨어 개발 환경에 잘 맞습니다. 또한, 모노리스 방식의 애플리케이션이 겪는 한계를 극복합니다.
+
+### 소프트웨어 스택 Software Stack
+
+구현에 사용되는 기술, 프레임워크 및 라이브러리 목록입니다:
+
+> TBD
+
+### 아키텍처 의사 결정 기록 Architectural Decision Records (ADRs)
+
+프로젝트 진행 과정에서 내린 의사 결정에 대해 [아키텍처 의사 결정 기록(Architecture Decision Record, ADRs)](https://adr.github.io)을 남깁니다.
+
+> [docs/architecture-decision-records](docs/architecture-decision-records)
+
+문서 관리는 [ADR Tools](https://github.com/npryce/adr-tools?tab=readme-ov-file)을 사용합니다.
+
+## 빌드 및 실행 방법 Build and Run
+
+> TBD
+
 ## 라이선스 License
 
 라이선스 권한과 제한 사항에 대해서는 [LICENSE](LICENSE.md) 파일을 참조하세요 (MIT).
+
+## 참조 Reference
+
+### 모듈형 모노리스 Modular Monolith
+
+- ["Building Better Monoliths – Modulithic Applications with Spring Boot"](https://speakerdeck.com/olivergierke/building-better-monoliths-modulithic-applications-with-spring-boot-cd16e6ec-d334-497d-b9f6-3f92d5db035a)
+  자료, Oliver Drotbohm
+- ["Modular Monoliths"](https://www.youtube.com/watch?v=5OjqD-ow8GE) 영상, 시몬 브라운(Simon Brown)
+- ["Pattern: Monolithic Architecture"](https://microservices.io/patterns/monolithic.html) 글, 크리스 리처드슨(Chris Richardson)
+- ["MonolithFirst"](https://martinfowler.com/bliki/MonolithFirst.html) 글, 마틴 파울러(Martin Fowler)
+
+### 애플리케이션 아키텍처 Application Architecture
+
+- ["엔터프라이즈 애플리케이션 아키텍처 패턴: 엔터프라이즈 아키텍처 구축을 위한 객체 지향 설계의 원리와 기법"](https://martinfowler.com/books/eaa.html) 도서, 저자: 마틴 파울러(Martin Fowler), 역자: 최민석
+- ["클린 아키텍처: 소프트웨어 구조와 설계 원칙"](https://ebook.insightbook.co.kr/book/69) 도서, 저자: 로버트 C. 마틴(Robert C. Martin), 역자: 송준이
+- ["만들면서 배우는 클린 아키텍처: 자바 코드로 구현하는 클린 웹 애플리케이션"](https://wikibook.co.kr/clean-architecture/) 도서, 저자: 톰 홈버그(Tom Hombergs), 역자: 박소은
+- ["Hexagonal/Ports & Adapters Architecture"](https://web.archive.org/web/20180822100852/http://alistair.cockburn.us/Hexagonal+architecture) 글, 알리스테어 콕번(Alistair Cockburn)
+
+### 시스템 아키텍처 System Architecture
+
+- ["기업 통합 패턴 Enterprise Integration Patterns: 기업 분산 애플리케이션 통합을 위한 메시징 해결책"](http://www.acornpub.co.kr/book/enterprise-integration-patterns) 도서, 저자: 그레거 호프(Gregor Hohpe) 바비 울프(Bobby Woolf), 역자: 차정호
+- ["마이크로서비스 아키텍처 구축: 대용량 시스템의 효율적인 분산 설계 기법"](https://m.hanbit.co.kr/store/books/book_view.html?p_code=B8584207882) 도서, 저자: 샘 뉴먼(Sam Newman), 역자: 정성권
+
+### 설계 Design
+
+- ["오브젝트: 코드로 이해하는 객체지향 설계"](https://wikibook.co.kr/object/) 도서, 조영호
+- ["토비의 스프링"](http://www.acornpub.co.kr/book/toby-spring3-1-set) 도서, 이일민
+- ["OpenAPI와 스웨거를 활용한 실전 API 설계: 요구사항 분석부터 비즈니스 모델 설계, 문서화, 자동화, 테스트, API 확장과 진화까지"](https://www.onlybook.co.kr/entry/designing-API) 도서, 저자: 조시 포널랫(Joshua S. Ponelat) 루카스 로젠스톡(Lukas L. Rosenstock), 역자: 오명운
+- ["도메인 주도 설계 핵심: 핵심을 간추린 비즈니스 중심의 설계로 소프트웨어 개발 프로젝트 성공하기"](http://acornpub.co.kr/book/domain-driven-design-distilled) 도서, 저자: 반 버논(Vaughn Vernon), 역자: 박현철, 전장호
+- ["Java 9 모듈 프로그래밍: 자바 모듈 프로그래밍으로 재사용 가능하고 관리하기 쉬운 코드 작성하기"](https://m.hanbit.co.kr/store/books/book_view.html?p_code=B7608640342) 도서, 저자: 코시크 코타갈(Koushik Kothagal), 역자:유동환
