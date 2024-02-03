@@ -259,7 +259,14 @@ classDiagram
 
 구현에 사용되는 기술, 프레임워크 및 라이브러리 목록입니다:
 
-> TBD
+- Java 21
+- Spring Framework 6.x
+- Spring Boot 3.x
+- Spring Data JDBC 3.x
+- Jackson 2.x
+- [Gradle](https://gradle.org) (build tools)
+- [H2 Database](http://www.h2database.com/html/main.html) (database)
+- [Docker Compose](https://docs.docker.com/compose/)
 
 ### 아키텍처 의사 결정 기록 Architectural Decision Records (ADRs)
 
@@ -271,7 +278,15 @@ classDiagram
 
 ## 빌드 및 실행 방법 Build and Run
 
-> TBD
+저장소를 복제하거나 압축 파일로 내려받은 받은 후 터미널에서 다음과 같은 방법으로 실행할 수 있습니다.
+
+### 그레이들로 실행하기 Run using Gradle
+
+> ❯ ./gradlew bootRun --args='--spring.profiles.active=local' --parallel --max-workers=4
+
+### 도커 컴포즈로 실행하기 Run using Docker Compose
+
+> ❯ docker-compose up --build -d
 
 ## 라이선스 License
 
