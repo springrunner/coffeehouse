@@ -2,6 +2,7 @@ pluginManagement {
     plugins {
         id 'org.springframework.boot' version "$springBootVersion"
         id 'io.spring.dependency-management' version "$springDependencyManagementVersion"
+        id 'org.openapi.generator' version "$openAPIGeneratorVersion"
     }
 }
 
@@ -10,5 +11,12 @@ rootProject.name = 'coffeehouse'
 include 'applications:coffeehouse-server'
 findProject(':applications:coffeehouse-server')?.name = 'coffeehouse-server'
 
+include 'modules:user'
+findProject(':modules:user')?.name = 'user'
+
 include 'libraries:base'
 findProject(':libraries:base')?.name = 'base'
+include 'libraries:security'
+findProject(':libraries:security')?.name = 'security'
+include 'libraries:spring-data-extensions'
+findProject(':libraries:spring-data-extensions')?.name = 'spring-data-extensions'

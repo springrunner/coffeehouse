@@ -4,9 +4,11 @@ server:
 logging:
   group:
     application: coffeehouse.applications
+    module: coffeehouse.modules
     library: coffeehouse.libraries
   level:
     application: DEBUG
+    module: DEBUG
     library: DEBUG
     web: DEBUG
     sql: DEBUG

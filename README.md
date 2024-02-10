@@ -199,6 +199,27 @@ classDiagram
 
 ## 구현 Implement
 
+### API Design First
+
+`API Design First`는 소프트웨어 개발 프로세스에서 API를 우선적으로 설계하는 접근 방식입니다. 이 방법론은 API를 시스템의 핵심 구성 요소로 간주하며, 애플리케이션의 다른 부분을 개발하기 전에 먼저 API의 설계와 문서화에 중점을 둡니다. API Design Design의 목표는 더 효율적이고 일관된 개발 프로세스를 제공하며, 향후 확장성과 유지보수성을 향상시키는 것입니다.
+
+[OpenAPI Specification](https://www.openapis.org)과 [OpenAPI Generator](https://openapi-generator.tech)를 활용함으로써, API Design First 접근 방식을 효과적으로 구현할 수 있으며, API의 일관성과 품질을 보장하는 동시에 개발 프로세스를 간소화하고 가속화할 수 있습니다.
+
+#### OpenAPI Specification (OAS)
+
+`OpenAPI Specification`은 API 설계를 위한 표준 언어입니다. 이를 통해 개발자는 RESTful API의 모든 요소(엔드포인트, 요청 및 응답 형식, 인증 방법 등)를 명확하게 정의하고 문서화 할 수 있습니다. OAS를 사용하면, API의 구조를 쉽게 이해하고, 다양한 도구와의 호환성을 보장할 수 있습니다. 또한, API 문서가 실제 API 구현과 동기화되어 있음을 보장하며, 이는 API의 사용성과 유지보수성을 크게 향상시킵니다.
+
+#### OpenAPI Generator
+
+`OpenAPI Generator`는 `OpenAPI Specification`으로부터 서버 스텁, 클라이언트 라이브러리, API 문서 등을 자동으로 생성하는 도구입니다. 이 도구를 사용하면, API 명세서를 기반으로 초기 개발 작업을 자동화하고, 개발 프로세스를 가속화할 수 있습니다. `OpenAPI Generator`는 여러 언어와 프레임워크를 지원하므로, 개발 팀이 선호하는 기술 스택을 사용하여 API를 신속하게 구현할 수 있습니다.
+
+> [!TIP]
+> An API-first approach to building products can benefit your organization in many ways. 
+> And API first approach requires that teams plan, organize, and share a vision of their API program. 
+> It also requires adopting tools that support an API first approach.
+>
+> [Article, Understanding  the API-First Approach to Building Products](https://swagger.io/resources/articles/adopting-an-api-first-approach/)
+
 ### 아키텍처 Architecture
 
 #### 원칙
@@ -254,6 +275,19 @@ classDiagram
 - 모듈 간 통신은 이벤트와 알림을 통해 서로의 상태 변경을 비동기적으로 통지함으로써 이루어지며, 필요에 따라 동기식 통신도 인터페이스를 통해 최소한의 의존성으로 진행됩니다. 이 접근 방식은 각 모듈의 독립성과 자율성을 유지하며 모듈 간의 강한 결합을 방지합니다.
 
 이 접근법을 통해, 각 모듈은 마치 독립적인 소규모 애플리케이션처럼 기능하여 시스템 전체의 유연성과 확장성을 향상시킵니다. 이는 비즈니스 기능의 변경이 빈번히 발생하는 현대의 소프트웨어 개발 환경에 잘 맞습니다. 또한, 모노리스 방식의 애플리케이션이 겪는 한계를 극복합니다.
+
+#### 계층화 Layering
+
+수직 슬라이스된 모듈은 비즈니스 목적 달성을 위해 필요한 모든 요소를 포함하고 있기 때문에 단순하지 않습니다. 이를 해결하기 위해, 모듈 내에서 프레젠테이션(UI), 도메인(비즈니스 로직), 데이터와 같은 세 가지 주요 계층으로 세분화할 수 있습니다. 이 과정을 `계층화 Layering`라고 합니다. 계층화는 복잡한 소프트웨어 시스템을 이해하고 관리하기 쉬운 부분으로 나누는데 사용되는 가장 일반적인 기법 중 하나입니다. 이러한 구조는 각 계층이 특정 기능에 집중할 수 있도록 함으로써, 모듈 내부 복잡도를 효과적으로 낮추는 데 도움이 됩니다.
+
+- 프레젠테이션 계층 presentation layer : 서비스 제공, 정보 표시, 사용자 및 HTTP 요청, 명령줄 호출, 일괄 작업 API 처리
+- 도메인 계층 domain layer : 시스템의 핵심이 되는 논리
+- 데이터 계층 data layer : 데이터베이스, 메시징 시스템, 트랜잭션 관리자 및 다른 패키지와의 통신
+
+![Presentation Domain Data Layering](https://martinfowler.com/bliki/images/presentationDomainDataLayering/all_more.png)
+
+의존 방향은 일반적으로 계층 구조을 따라 위에서 아래로 흐르며, 프레젠테이션 계층은 도메인 계층에 의존하고, 도메인 계층은 데이터 계층에 의존합니다. 흔히 사용되는 변형으로는 도메인 계층과 데이터 계층 사이에 [매퍼 Mapper](https://martinfowler.com/eaaCatalog/mapper.html)를 도입해 도메인 계층이 데이터 계층의 구체적 구현에 직접 의존하지 않도록 구성하는 방식이 있습니다. 이러한 구조는 [육각형 아키텍처(또는 포트와 어댑터 아키텍처)](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)) 로도 알려져 있으며, 시스템의 유연성을 높이고 도메인 로직의 순수성을 유지하는 데 도움을 줍니다.
+
 
 ### 소프트웨어 스택 Software Stack
 

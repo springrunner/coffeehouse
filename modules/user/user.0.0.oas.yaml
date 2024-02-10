@@ -1,0 +1,102 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Coffeehouse User APIs
+  description: API for managing users and interactions in the Coffeehouse system
+  contact:
+    email: springrunner.kr@gmail.com
+servers:
+  - url: http://localhost:8080
+paths:
+  /customers/register:
+    post:
+      summary: Register a new customer account
+      operationId: registerCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '201':
+          description: Customer registered successfully
+      security: []
+  /customers/me:
+    get:
+      summary: Get the details of an customer for authenticated sessions
+      operationId: getCustomerDetails
+      x-operation-extra-annotation:
+        - '@jakarta.annotation.security.RolesAllowed("CUSTOMER")'
+      responses:
+        '200':
+          description: details of an customer retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDetails'
+        '401':
+          description: unauthorized access 
+        '404':
+          description: customer not found
+  /accounts/login:
+    post:
+      summary: Account login
+      operationId: loginAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identifier:
+                  type: string
+                  description: Email or Username for login
+                password:
+                  type: string
+              required:
+                - identifier
+                - password
+      responses:
+        '200':
+          description: Login successful, access token provided.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: Access token for authenticated sessions
+                required:
+                  - accessToken
+      security: []
+components:
+  schemas:
+    CustomerDetails:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        registeredAt:
+          type: string
+          format: date-time
+  securitySchemes:
+    SessionToken:
+      type: apiKey
+      in: header
+      name: Authorization
+security:
+  - SessionToken: []
