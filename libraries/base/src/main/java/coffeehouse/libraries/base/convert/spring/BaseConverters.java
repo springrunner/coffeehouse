@@ -12,6 +12,10 @@ public abstract class BaseConverters {
 
     public static List<Converter<?, ?>> converters() {
         return Arrays.asList(
+                new MoneyCurrencyUnitConverters.CurrencyUnitToStringConverter(),
+                new MoneyCurrencyUnitConverters.StringToCurrencyUnitConverter(),
+                new MoneyNumberValueConverters.NumberValueToDoubleConverter(),
+                new MoneyNumberValueConverters.DoubleToProductIdConverter(),
                 new EmailConverters.EmailToStringConverter(),
                 new EmailConverters.StringToEmailConverter(),
                 new PasswordConverters.PasswordToStringConverter(),

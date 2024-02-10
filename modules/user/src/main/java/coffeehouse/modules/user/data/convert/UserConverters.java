@@ -1,6 +1,7 @@
 package coffeehouse.modules.user.data.convert;
 
-import org.springframework.core.convert.converter.Converter;
+import coffeehouse.libraries.base.convert.spring.support.ObjectIdConverters;
+import coffeehouse.modules.user.domain.UserAccountId;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,10 +11,10 @@ import java.util.List;
  */
 public abstract class UserConverters {
 
-    public static List<Converter<?, ?>> converters() {
+    public static List<?> converters() {
         return Arrays.asList(
-                new UserAccountIdConverters.UserAccountIdToStringConverter(),
-                new UserAccountIdConverters.StringToUserAccountIdConverter(),
+                ObjectIdConverters.objectIdToString(UserAccountId.class),
+                ObjectIdConverters.stringToObjectId(UserAccountId.class),
                 new UserAccountRoleConverters.UserAccountRoleToStringConverter(),
                 new UserAccountRoleConverters.StringToUserAccountRoleConverter()
         );

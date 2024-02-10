@@ -13,6 +13,8 @@ findProject(':applications:coffeehouse-server')?.name = 'coffeehouse-server'
 
 include 'modules:user'
 findProject(':modules:user')?.name = 'user'
+include 'modules:catalog'
+findProject(':modules:catalog')?.name = 'catalog'
 
 include 'libraries:base'
 findProject(':libraries:base')?.name = 'base'

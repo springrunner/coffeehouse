@@ -11,10 +11,17 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    dependencies {
+        dependency("org.javamoney:moneta:$monetaVersion")
+    }
+}
+
 dependencies {
     implementation(project(':libraries:spring-data-extensions'))
 
     implementation(project(':modules:user'))
+    implementation(project(':modules:catalog'))
 
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('org.springframework.boot:spring-boot-starter-validation')

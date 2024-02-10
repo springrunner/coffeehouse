@@ -14,16 +14,21 @@ dependencyManagement {
     imports {
         mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
     }
+    dependencies {
+        dependency("org.javamoney:moneta:$monetaVersion")
+    }
 }
 
 dependencies {
     api('jakarta.annotation:jakarta.annotation-api')
     api('jakarta.validation:jakarta.validation-api')
+    api('javax.money:money-api')
     api('org.slf4j:slf4j-api')
 
     implementation('org.springframework:spring-core')
     implementation('org.springframework.data:spring-data-commons')
     implementation('com.fasterxml.jackson.core:jackson-databind')
+    implementation('org.javamoney:moneta')
 
     testImplementation('org.junit.jupiter:junit-jupiter')
 }

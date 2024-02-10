@@ -1,0 +1,41 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Coffeehouse Catalog APIs
+  description: API for managing catalogs and interactions in the Coffeehouse system
+  contact:
+    email: springrunner.kr@gmail.com
+servers:
+  - url: http://localhost:8080
+paths:
+  /products/{productCode}:
+    get:
+      summary: Get the details of an product
+      operationId: getProductDetails
+      parameters:
+        - in: path
+          name: productCode
+          required: true
+          schema:
+            type: string
+          description: The Code of the product
+      responses:
+        '200':
+          description: details of an product retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetails'
+        '404':
+          description: product not found
+components:
+  schemas:
+    ProductDetails:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        price:
+          type: string

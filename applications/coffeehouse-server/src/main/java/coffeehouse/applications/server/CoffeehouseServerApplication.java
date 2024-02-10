@@ -3,6 +3,8 @@ package coffeehouse.applications.server;
 import coffeehouse.libraries.base.convert.spring.BaseConverters;
 import coffeehouse.libraries.security.web.EnableWebSecurity;
 import coffeehouse.libraries.spring.data.jdbc.core.mapping.ModularJdbcMappingContext;
+import coffeehouse.modules.catalog.EnableCatalogModule;
+import coffeehouse.modules.catalog.data.convert.CatalogConverters;
 import coffeehouse.modules.user.EnableUserModule;
 import coffeehouse.modules.user.data.convert.UserConverters;
 import org.springframework.boot.SpringApplication;
@@ -20,12 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 /**
  * @author springrunner.kr@gmail.com
  */
 @SpringBootApplication
 @EnableWebSecurity
 @EnableUserModule
+@EnableCatalogModule
 public class CoffeehouseServerApplication {
 
     public static void main(String[] args) {
@@ -40,6 +44,7 @@ public class CoffeehouseServerApplication {
             var converters = new ArrayList<>();
             converters.addAll(BaseConverters.converters());
             converters.addAll(UserConverters.converters());
+            converters.addAll(CatalogConverters.converters());
             return converters;
         }
 

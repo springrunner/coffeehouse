@@ -18,13 +18,11 @@ dependencyManagement {
     dependencies {
         dependency("com.google.code.findbugs:jsr305:$jsr305Version")
         dependency("org.javamoney:moneta:$monetaVersion")
-        dependency("net.datafaker:datafaker:$datafakerVersion")
     }
 }
 
 dependencies {
     api(project(':libraries:base'))
-    api(project(':libraries:security'))
 
     compileOnly('jakarta.servlet:jakarta.servlet-api')
     compileOnly('com.google.code.findbugs:jsr305')
@@ -33,19 +31,18 @@ dependencies {
     implementation('org.springframework:spring-webmvc')
     implementation('org.springframework.data:spring-data-jdbc')
     implementation('com.fasterxml.jackson.core:jackson-annotations')
+    implementation('org.javamoney:moneta')
 
     testImplementation('org.springframework:spring-test')
     testImplementation('org.junit.jupiter:junit-jupiter')
-    testImplementation('org.mockito:mockito-junit-jupiter')
-    testImplementation('net.datafaker:datafaker')
 }
 
 openApiGenerate {
     generatorName = "spring"
-    inputSpec = "$projectDir/user.0.0.oas.yaml"
+    inputSpec = "$projectDir/catalog.0.0.oas.yaml"
 
-    apiPackage = "coffeehouse.contracts.user.web"
-    modelPackage = "coffeehouse.contracts.user.web.model"
+    apiPackage = "coffeehouse.contracts.catalog.web"
+    modelPackage = "coffeehouse.contracts.catalog.web.model"
     configOptions.set([
             "annotationLibrary"    : "none",
             "delegatePattern"      : "true",
