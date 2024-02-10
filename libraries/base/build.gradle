@@ -1,48 +1,14 @@
 plugins {
-    id 'java-library'
-    id 'io.spring.dependency-management'
-}
-
-group = "$projectGroup"
-version = "$projectVersion"
-
-repositories {
-    mavenCentral()
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
-    }
-    dependencies {
-        dependency("org.javamoney:moneta:$monetaVersion")
-    }
+    id 'coffeehouse.library-conventions'
 }
 
 dependencies {
     api('jakarta.annotation:jakarta.annotation-api')
     api('jakarta.validation:jakarta.validation-api')
     api('javax.money:money-api')
-    api('org.slf4j:slf4j-api')
 
     implementation('org.springframework:spring-core')
     implementation('org.springframework.data:spring-data-commons')
     implementation('com.fasterxml.jackson.core:jackson-databind')
     implementation('org.javamoney:moneta')
-
-    testImplementation('org.junit.jupiter:junit-jupiter')
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of("$javaVersion"))
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = "$javaOptionEncoding"
-}
-
-tasks.withType(Test).configureEach {
-    useJUnitPlatform()
 }

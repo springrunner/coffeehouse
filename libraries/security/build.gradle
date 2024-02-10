@@ -1,43 +1,11 @@
 plugins {
-    id 'java-library'
-    id 'io.spring.dependency-management'
-}
-
-group = "$projectGroup"
-version = "$projectVersion"
-
-repositories {
-    mavenCentral()
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
-    }
+    id 'coffeehouse.library-conventions'
 }
 
 dependencies {
-    api('jakarta.annotation:jakarta.annotation-api')
-    api('org.slf4j:slf4j-api')
-    
+    implementation('jakarta.annotation:jakarta.annotation-api')
     implementation('jakarta.servlet:jakarta.servlet-api')
     
     implementation('org.springframework:spring-webmvc')
     implementation('com.fasterxml.jackson.core:jackson-databind')
-    
-    testImplementation('org.junit.jupiter:junit-jupiter')
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of("$javaVersion"))
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = "$javaOptionEncoding"
-}
-
-tasks.withType(Test).configureEach {
-    useJUnitPlatform()
 }

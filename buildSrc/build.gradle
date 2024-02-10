@@ -1,0 +1,15 @@
+plugins {
+    id 'groovy-gradle-plugin'
+}
+
+repositories {
+    gradlePluginPortal()
+}
+
+dependencies {
+    def props = new Properties()
+    file("../gradle.properties").withInputStream { props.load(it) }
+
+    implementation("io.spring.gradle:dependency-management-plugin:${props['springDependencyManagementVersion']}")
+    implementation("org.openapitools:openapi-generator-gradle-plugin:${props['openAPIGeneratorVersion']}")
+}
