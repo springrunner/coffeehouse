@@ -1,7 +1,7 @@
 package coffeehouse.modules.user.domain.entity;
 
-import java.util.Arrays;
-import java.util.NoSuchElementException;
+import coffeehouse.libraries.base.lang.Codable;
+
 import java.util.Objects;
 
 /**
@@ -10,7 +10,7 @@ import java.util.Objects;
  *
  * @author springrunner.kr@gmail.com
  */
-public enum UserAccountRole {
+public enum UserAccountRole implements Codable {
     CUSTOMER("CUSTOMER", "Customer", "Represents a regular customer of the coffeehouse, with access to place orders and view their account."),
     CASHIER("CASHIER", "Cashier", "Handles transactions, including accepting orders and processing refunds. Has access to sales data."),
     BARISTA("BARISTA", "Barista", "Responsible for preparing and serving coffee and other drinks. Manages inventory of ingredients."),
@@ -27,14 +27,17 @@ public enum UserAccountRole {
         this.description = Objects.requireNonNull(description, "description must not be null");
     }
 
+    @Override
     public String getCode() {
         return code;
     }
 
+    @Override
     public String getText() {
         return text;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -43,11 +46,8 @@ public enum UserAccountRole {
     public String toString() {
         return code;
     }
-
+    
     public static UserAccountRole ofCode(String code) {
-        return Arrays.stream(values())
-                .filter(it -> it.code.equalsIgnoreCase(code))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("No code present: %s".formatted(code)));
+        return Codable.ofCode(UserAccountRole.class, code);
     }
 }

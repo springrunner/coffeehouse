@@ -5,6 +5,8 @@ import coffeehouse.libraries.security.web.EnableWebSecurity;
 import coffeehouse.libraries.spring.data.jdbc.core.mapping.ModularJdbcMappingContext;
 import coffeehouse.modules.catalog.EnableCatalogModule;
 import coffeehouse.modules.catalog.data.convert.CatalogConverters;
+import coffeehouse.modules.order.EnableOrderModule;
+import coffeehouse.modules.order.data.convert.OrderConverters;
 import coffeehouse.modules.user.EnableUserModule;
 import coffeehouse.modules.user.data.convert.UserConverters;
 import org.springframework.boot.SpringApplication;
@@ -30,6 +32,7 @@ import java.util.Optional;
 @EnableWebSecurity
 @EnableUserModule
 @EnableCatalogModule
+@EnableOrderModule
 public class CoffeehouseServerApplication {
 
     public static void main(String[] args) {
@@ -45,6 +48,7 @@ public class CoffeehouseServerApplication {
             converters.addAll(BaseConverters.converters());
             converters.addAll(UserConverters.converters());
             converters.addAll(CatalogConverters.converters());
+            converters.addAll(OrderConverters.converters());
             return converters;
         }
 

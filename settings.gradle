@@ -15,6 +15,8 @@ include 'modules:user'
 findProject(':modules:user')?.name = 'user'
 include 'modules:catalog'
 findProject(':modules:catalog')?.name = 'catalog'
+include 'modules:order'
+findProject(':modules:order')?.name = 'order'
 
 include 'libraries:base'
 findProject(':libraries:base')?.name = 'base'

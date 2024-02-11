@@ -1,0 +1,176 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Coffeehouse Order APIs
+  description: API for managing orders and interactions in the Coffeehouse system
+  contact:
+    email: springrunner.kr@gmail.com
+servers:
+  - url: http://localhost:8080
+paths:
+  /orders:
+    post:
+      tags:
+        - Customer
+      summary: Place an order
+      operationId: placeOrder
+      x-operation-extra-annotation:
+        - '@jakarta.annotation.security.RolesAllowed("CUSTOMER")'      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderLines:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productCode:
+                        type: string
+                        description: The Code of the product
+                      quantity:
+                        type: integer
+                        description: The quantity of the product
+      responses:
+        '201':
+          description: Order placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetails'
+        '400':
+          description: Invalid request  
+  /orders/{orderId}:
+    get:
+      tags:
+        - Staff
+        - Customer
+      summary: Get the details of an order
+      operationId: getOrderDetails
+      x-operation-extra-annotation:
+        - '@jakarta.annotation.security.RolesAllowed({"CUSTOMER", "CASHIER", "BOSS"})'
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+          description: The ID of the order
+      responses:
+        '200':
+          description: details of an order retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetails'
+        '404':
+          description: order not found
+  /orders/{orderId}/acceptance:
+    put:
+      tags:
+        - Staff
+      summary: Accept an order
+      operationId: acceptOrder
+      x-operation-extra-annotation:
+        - '@jakarta.annotation.security.RolesAllowed({"CASHIER", "BOSS"})'      
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+          description: The ID of the order to be accepted
+      responses:
+        '200':
+          description: order accepted successfully
+        '404':
+          description: order not found.
+  /orders/{orderId}/cancellation:
+    put:
+      tags:
+        - Staff
+        - Customer
+      summary: Cancel an order
+      operationId: cancelOrder
+      x-operation-extra-annotation:
+        - '@jakarta.annotation.security.RolesAllowed({"CUSTOMER", "CASHIER", "BOSS"})'      
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cancellationReason:
+                  type: string
+                  description: The reason for the order's cancellation
+      responses:
+        '200':
+          description: Order canceled successfully
+        '400':
+          description: Invalid request
+        '404':
+          description: Order not found          
+components:
+  schemas:
+    OrderDetails:
+      type: object
+      properties:
+        orderId:
+          type: string
+        orderLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderLine'
+        orderStatus:
+          $ref: '#/components/schemas/OrderStatus'
+      required:
+        - orderId
+        - orderLines
+        - orderStatus          
+    OrderLine:
+      type: object
+      properties:
+        orderItemId:
+          type: string
+        orderProductId:
+          type: string
+        orderQuantity:
+          type: integer
+      required:
+        - orderItemId
+        - orderProductId          
+        - orderQuantity
+    OrderStatus:
+      type: object
+      properties:
+        code:
+          type: string
+        text:
+          type: string
+        description:
+          type: string
+      required:
+        - code
+        - text          
+  securitySchemes:
+    SessionToken:
+      type: apiKey
+      in: header
+      name: Authorization          
+security:
+  - SessionToken: []
+tags:
+  - name: Staff
+    description: Manage orders operations
+  - name: Customer
+    description: Customer orders operations
