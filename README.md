@@ -288,6 +288,9 @@ classDiagram
 
 의존 방향은 일반적으로 계층 구조을 따라 위에서 아래로 흐르며, 프레젠테이션 계층은 도메인 계층에 의존하고, 도메인 계층은 데이터 계층에 의존합니다. 흔히 사용되는 변형으로는 도메인 계층과 데이터 계층 사이에 [매퍼 Mapper](https://martinfowler.com/eaaCatalog/mapper.html)를 도입해 도메인 계층이 데이터 계층의 구체적 구현에 직접 의존하지 않도록 구성하는 방식이 있습니다. 이러한 구조는 [육각형 아키텍처(또는 포트와 어댑터 아키텍처)](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)) 로도 알려져 있으며, 시스템의 유연성을 높이고 도메인 로직의 순수성을 유지하는 데 도움을 줍니다.
 
+### 통합 테스트 Integration Testing
+
+> TBD
 
 ### 소프트웨어 스택 Software Stack
 

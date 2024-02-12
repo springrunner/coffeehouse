@@ -24,3 +24,6 @@ include 'libraries:security'
 findProject(':libraries:security')?.name = 'security'
 include 'libraries:spring-data-extensions'
 findProject(':libraries:spring-data-extensions')?.name = 'spring-data-extensions'
+
+include 'tests:integration-testing'
+findProject(':tests:integration-testing')?.name = 'integration-testing'
