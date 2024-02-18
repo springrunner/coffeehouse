@@ -29,3 +29,5 @@ findProject(':libraries:spring-data-extensions')?.name = 'spring-data-extensions
 
 include 'tests:integration-testing'
 findProject(':tests:integration-testing')?.name = 'integration-testing'
+include 'tests:system-testing'
+findProject(':tests:system-testing')?.name = 'system-testing'

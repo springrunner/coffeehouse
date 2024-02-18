@@ -1,0 +1,12 @@
+debug: true
+
+system-testing:
+  coffeehouse-server:
+    base-uri: http://localhost:8080
+
+spring:
+  docker:
+    compose:
+      enabled: true
+      skip:
+        in-tests: false

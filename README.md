@@ -292,6 +292,10 @@ classDiagram
 
 > TBD
 
+### 시스템 테스트 System Testing
+
+> TBD
+
 ### 소프트웨어 스택 Software Stack
 
 구현에 사용되는 기술, 프레임워크 및 라이브러리 목록입니다:

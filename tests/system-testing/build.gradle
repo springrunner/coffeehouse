@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management'
+}
+
+group = "$projectGroup"
+version = "$projectVersion"
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+    }
+    dependencies {
+        dependency("net.datafaker:datafaker:$datafakerVersion")
+    }
+}
+
+dependencies {
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.boot:spring-boot-docker-compose')
+    testImplementation('io.rest-assured:rest-assured')
+    testImplementation('net.datafaker:datafaker')
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of("$javaVersion"))
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "$javaOptionEncoding"
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        showCauses = true
+        showExceptions = true
+        showStackTraces = false
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = false
+    }
+}

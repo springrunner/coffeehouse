@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  coffeehouse-server:
+    build:
+      context: ../../
+      dockerfile: applications/coffeehouse-server/Dockerfile
+    networks:
+      - coffeehouse
+    ports:
+      - "8080:8080"       
+networks:
+  coffeehouse:
