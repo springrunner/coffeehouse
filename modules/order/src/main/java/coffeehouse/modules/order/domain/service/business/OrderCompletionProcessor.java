@@ -13,7 +13,7 @@ import java.util.Objects;
  * @author springrunner.kr@gmail.com
  */
 @Service
-public class OrderCompletionProcessor implements OrderCompletion {
+class OrderCompletionProcessor implements OrderCompletion {
 
     private final OrderRepository orderRepository;
 

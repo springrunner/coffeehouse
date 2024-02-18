@@ -1,0 +1,7 @@
+plugins {
+    id 'coffeehouse.library-conventions'
+}
+
+dependencies {
+    implementation('org.springframework:spring-context')
+}

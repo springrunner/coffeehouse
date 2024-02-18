@@ -1,5 +1,8 @@
 package coffeehouse.modules.catalog;
 
+import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
+import coffeehouse.libraries.spring.context.annotation.PublishedBean;
+import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +41,16 @@ public @interface EnableCatalogModule {
             initializer.setDatabasePopulator(databasePopulator);
 
             return initializer;
+        }
+
+        @PublishedBean
+        LimitedBeanFactoryAccessor catalogDelegatedBeanFactoryAccessor() {
+            return new LimitedBeanFactoryAccessor();
+        }
+
+        @Bean
+        PublishedBeanRegisterProcessor catalogPublishedBeanRegisterProcessor() {
+            return new PublishedBeanRegisterProcessor();
         }
     }
 }

@@ -1,5 +1,8 @@
 package coffeehouse.modules.user;
 
+import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
+import coffeehouse.libraries.spring.context.annotation.PublishedBean;
+import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +41,16 @@ public @interface EnableUserModule {
             initializer.setDatabasePopulator(databasePopulator);
 
             return initializer;
+        }
+
+        @PublishedBean
+        LimitedBeanFactoryAccessor userDelegatedBeanFactoryAccessor() {
+            return new LimitedBeanFactoryAccessor();
+        }
+        
+        @Bean
+        PublishedBeanRegisterProcessor userPublishedBeanRegisterProcessor() {
+            return new PublishedBeanRegisterProcessor();
         }
     }
 }

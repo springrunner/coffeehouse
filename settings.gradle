@@ -22,6 +22,8 @@ include 'libraries:base'
 findProject(':libraries:base')?.name = 'base'
 include 'libraries:security'
 findProject(':libraries:security')?.name = 'security'
+include 'libraries:spring-extensions'
+findProject(':libraries:spring-extensions')?.name = 'spring-extensions'
 include 'libraries:spring-data-extensions'
 findProject(':libraries:spring-data-extensions')?.name = 'spring-data-extensions'
 

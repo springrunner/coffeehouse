@@ -2,6 +2,7 @@ package coffeehouse.modules.user.domain.service.business;
 
 import coffeehouse.libraries.base.crypto.Password;
 import coffeehouse.libraries.base.lang.Email;
+import coffeehouse.libraries.spring.beans.factory.annotation.Published;
 import coffeehouse.modules.user.domain.UserAccountId;
 import coffeehouse.modules.user.domain.entity.UserAccount;
 import coffeehouse.modules.user.domain.entity.UserAccountRepository;
@@ -17,8 +18,9 @@ import java.util.UUID;
 /**
  * @author springrunner.kr@gmail.com
  */
+@Published
 @Service
-public class CustomerService implements CustomerRegistration, Customers {
+class CustomerService implements CustomerRegistration, Customers {
 
     private final UserAccountRepository userAccountRepository;
 

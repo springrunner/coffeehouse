@@ -14,7 +14,7 @@ import java.util.Objects;
  * @author springrunner.kr@gmail.com
  */
 @Service
-public class OrderCancellationProcessor implements OrderCancellation {
+class OrderCancellationProcessor implements OrderCancellation {
 
     private final OrderRepository orderRepository;
 

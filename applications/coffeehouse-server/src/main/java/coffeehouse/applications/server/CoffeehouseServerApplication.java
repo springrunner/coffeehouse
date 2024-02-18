@@ -2,6 +2,7 @@ package coffeehouse.applications.server;
 
 import coffeehouse.libraries.base.convert.spring.BaseConverters;
 import coffeehouse.libraries.security.web.EnableWebSecurity;
+import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
 import coffeehouse.libraries.spring.data.jdbc.core.mapping.ModularJdbcMappingContext;
 import coffeehouse.modules.catalog.EnableCatalogModule;
 import coffeehouse.modules.catalog.data.convert.CatalogConverters;
@@ -9,38 +10,67 @@ import coffeehouse.modules.order.EnableOrderModule;
 import coffeehouse.modules.order.data.convert.OrderConverters;
 import coffeehouse.modules.user.EnableUserModule;
 import coffeehouse.modules.user.data.convert.UserConverters;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.Banner;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.jdbc.core.mapping.JdbcMappingContext;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.relational.RelationalManagedTypes;
 import org.springframework.data.relational.core.mapping.DefaultNamingStrategy;
 import org.springframework.data.relational.core.mapping.NamingStrategy;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 /**
  * @author springrunner.kr@gmail.com
  */
-@SpringBootApplication
-@EnableWebSecurity
-@EnableUserModule
-@EnableCatalogModule
-@EnableOrderModule
 public class CoffeehouseServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CoffeehouseServerApplication.class, args);
+        new SpringApplicationBuilder(InfrastructureConfiguration.class)
+                .web(WebApplicationType.NONE)
+                .bannerMode(Banner.Mode.OFF)
+                .child(EnableUserModule.UserModuleConfiguration.class)
+                .web(WebApplicationType.NONE)
+                .bannerMode(Banner.Mode.OFF)
+                .sibling(EnableCatalogModule.CatalogModuleConfiguration.class)
+                .web(WebApplicationType.NONE)
+                .bannerMode(Banner.Mode.OFF)
+                .sibling(EnableOrderModule.OrderModuleConfiguration.class)
+                .web(WebApplicationType.NONE)
+                .bannerMode(Banner.Mode.OFF)
+                .sibling(WebConfiguration.class)
+                .bannerMode(Banner.Mode.OFF)
+                .run(args);
     }
-    
-    @Configuration
-    static class DataJdbcConfiguration extends AbstractJdbcConfiguration {
+
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    static class InfrastructureConfiguration extends AbstractJdbcConfiguration {
 
         @Override
         protected List<?> userConverters() {
@@ -60,6 +90,40 @@ public class CoffeehouseServerApplication {
             mappingContext.setManagedTypes(jdbcManagedTypes);
 
             return mappingContext;
+        }
+    }
+
+    @SpringBootConfiguration
+    @EnableAutoConfiguration(exclude = {
+            DataSourceAutoConfiguration.class,
+            DataSourceTransactionManagerAutoConfiguration.class,
+            HttpMessageConvertersAutoConfiguration.class,
+            JacksonAutoConfiguration.class,
+            JdbcRepositoriesAutoConfiguration.class,
+            JdbcTemplateAutoConfiguration.class,
+            PersistenceExceptionTranslationAutoConfiguration.class,
+            RestTemplateAutoConfiguration.class,
+            SqlInitializationAutoConfiguration.class,
+            TaskExecutionAutoConfiguration.class,
+            TaskSchedulingAutoConfiguration.class,
+            TransactionAutoConfiguration.class,
+    })
+    @EnableWebSecurity
+    static class WebConfiguration implements BeanFactoryPostProcessor {
+
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        @Override
+        public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+            var parentBeanFactory = beanFactory.getParentBeanFactory();
+            if (parentBeanFactory instanceof ConfigurableListableBeanFactory clbf) {
+                clbf.getBeansOfType(LimitedBeanFactoryAccessor.class).values().forEach(accessor -> {
+                    accessor.getBeansWithAnnotation(Controller.class).entrySet().forEach(it -> {
+                        beanFactory.registerSingleton(it.getKey(), it.getValue());
+                        logger.debug("Registered the module-controller: {}", it);
+                    });
+                });
+            }
         }
     }
 }

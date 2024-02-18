@@ -1,5 +1,6 @@
 package coffeehouse.modules.catalog.domain.service.business;
 
+import coffeehouse.libraries.spring.beans.factory.annotation.Published;
 import coffeehouse.modules.catalog.domain.ProductCode;
 import coffeehouse.modules.catalog.domain.ProductId;
 import coffeehouse.modules.catalog.domain.entity.ProductRepository;
@@ -12,6 +13,7 @@ import java.util.Optional;
 /**
  * @author springrunner.kr@gmail.com
  */
+@Published
 @Service
 public class CatalogsService implements Catalogs {
 

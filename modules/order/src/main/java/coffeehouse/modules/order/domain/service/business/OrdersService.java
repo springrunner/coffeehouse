@@ -13,7 +13,7 @@ import java.util.stream.StreamSupport;
  * @author springrunner.kr@gmail.com
  */
 @Service
-public class OrdersService implements Orders {
+class OrdersService implements Orders {
 
     private final OrderRepository orderRepository;
 

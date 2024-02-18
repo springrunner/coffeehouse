@@ -6,6 +6,7 @@ import coffeehouse.libraries.security.PlainToken;
 import coffeehouse.libraries.security.Token;
 import coffeehouse.libraries.security.authentication.TokenAuthentication;
 import coffeehouse.libraries.security.authentication.TokenIssuance;
+import coffeehouse.libraries.spring.beans.factory.annotation.Published;
 import coffeehouse.modules.user.domain.UserAccountId;
 import coffeehouse.modules.user.domain.entity.UserAccountRepository;
 import coffeehouse.modules.user.domain.entity.UserAccountRole;
@@ -24,8 +25,9 @@ import java.util.stream.StreamSupport;
 /**
  * @author springrunner.kr@gmail.com
  */
+@Published
 @Service
-public class AccountSecurityService implements AccountIdentification, TokenIssuance<UserAccountId>, TokenAuthentication<UserAccountId> {
+class AccountSecurityService implements AccountIdentification, TokenIssuance<UserAccountId>, TokenAuthentication<UserAccountId> {
 
     private final UserAccountRepository userAccountRepository;
     private final UserAccountTokenRepository userAccountTokenRepository;

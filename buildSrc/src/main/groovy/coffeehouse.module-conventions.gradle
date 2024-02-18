@@ -25,7 +25,8 @@ dependencyManagement {
 dependencies {
     api(project(':libraries:base'))
     api(project(':libraries:security'))
-
+    api(project(':libraries:spring-extensions'))
+    
     compileOnly('jakarta.servlet:jakarta.servlet-api')
     compileOnly('com.google.code.findbugs:jsr305')
 
