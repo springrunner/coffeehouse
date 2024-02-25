@@ -14,6 +14,7 @@ repositories {
 dependencyManagement {
     dependencies {
         dependency("org.javamoney:moneta:$monetaVersion")
+        dependency("org.zalando:jackson-datatype-money:$jacksonDatatypeMoney")
     }
 }
 
@@ -27,6 +28,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('org.springframework.boot:spring-boot-starter-validation')
     implementation('org.springframework.boot:spring-boot-starter-data-jdbc')
+    implementation('org.zalando:jackson-datatype-money')
 
     runtimeOnly('com.h2database:h2')
 

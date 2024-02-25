@@ -1,8 +1,12 @@
 package coffeehouse.modules.catalog;
 
+import coffeehouse.libraries.modulemesh.function.ModuleFunctionRegistry;
+import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
 import coffeehouse.libraries.spring.context.annotation.PublishedBean;
-import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
+import coffeehouse.modules.catalog.domain.ProductCode;
+import coffeehouse.modules.catalog.domain.service.Catalogs;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +55,20 @@ public @interface EnableCatalogModule {
         @Bean
         PublishedBeanRegisterProcessor catalogPublishedBeanRegisterProcessor() {
             return new PublishedBeanRegisterProcessor();
+        }
+    }
+    
+    @Configuration
+    class CatalogModuleMeshConfigurer {
+        
+        @Autowired
+        void registerModuleFunctions(ModuleFunctionRegistry registry, Catalogs catalogs) {
+            registry.registerModuleFunction(
+                    "catalogs/get-product-details",
+                    ProductCode.class,
+                    Catalogs.ProductDetails.class,
+                    productCode -> catalogs.getProductDetails(productCode).orElse(null)
+            );
         }
     }
 }

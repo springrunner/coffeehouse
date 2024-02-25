@@ -1,8 +1,12 @@
 package coffeehouse.modules.user;
 
+import coffeehouse.libraries.modulemesh.function.ModuleFunctionRegistry;
+import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
 import coffeehouse.libraries.spring.context.annotation.PublishedBean;
-import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
+import coffeehouse.modules.user.domain.UserAccountId;
+import coffeehouse.modules.user.domain.service.Customers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +55,20 @@ public @interface EnableUserModule {
         @Bean
         PublishedBeanRegisterProcessor userPublishedBeanRegisterProcessor() {
             return new PublishedBeanRegisterProcessor();
+        }
+    }
+
+    @Configuration
+    class UserModuleMeshConfigurer {
+
+        @Autowired
+        void registerModuleFunctions(ModuleFunctionRegistry registry, Customers customers) {
+            registry.registerModuleFunction(
+                    "customers/get-customer-details",
+                    UserAccountId.class,
+                    Customers.CustomerDetails.class,
+                    userAccountId -> customers.getCustomerDetails(userAccountId).orElse(null)
+            );
         }
     }
 }

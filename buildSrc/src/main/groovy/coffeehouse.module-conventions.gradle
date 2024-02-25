@@ -24,6 +24,7 @@ dependencyManagement {
 
 dependencies {
     api(project(':libraries:base'))
+    api(project(':libraries:modulemesh'))
     api(project(':libraries:security'))
     api(project(':libraries:spring-extensions'))
     

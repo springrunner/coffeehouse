@@ -1,6 +1,7 @@
 module coffeehouse.modules.order {
     requires coffeehouse.libraries.base;
     requires coffeehouse.libraries.security;
+    requires coffeehouse.libraries.modulemesh;
     requires coffeehouse.libraries.spring.extensions;
     requires coffeehouse.modules.user;
     requires coffeehouse.modules.catalog;

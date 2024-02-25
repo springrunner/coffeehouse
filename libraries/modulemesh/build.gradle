@@ -1,0 +1,9 @@
+plugins {
+    id 'coffeehouse.library-conventions'
+}
+
+dependencies {
+    implementation('org.springframework:spring-beans')
+    implementation('org.springframework:spring-context')
+    implementation('com.fasterxml.jackson.core:jackson-databind')
+}

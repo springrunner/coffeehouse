@@ -9,7 +9,6 @@ import coffeehouse.modules.order.domain.service.OrderPlacement;
 import coffeehouse.modules.order.domain.service.UnidentifiedProductException;
 import coffeehouse.modules.user.domain.UserAccountId;
 import coffeehouse.modules.user.domain.service.Customers;
-import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -18,9 +17,9 @@ import java.util.UUID;
 /**
  * @author springrunner.kr@gmail.com
  */
-@Service
+@Deprecated
 class OrderPlacementAdapterService implements OrderPlacement.OrdererVerification, OrderPlacement.OrderItemFactory {
-
+    
     private final Customers customers;
     private final Catalogs catalogs;
 

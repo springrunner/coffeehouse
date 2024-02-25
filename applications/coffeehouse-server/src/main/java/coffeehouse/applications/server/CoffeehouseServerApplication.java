@@ -1,15 +1,23 @@
 package coffeehouse.applications.server;
 
 import coffeehouse.libraries.base.convert.spring.BaseConverters;
+import coffeehouse.libraries.base.serialize.jackson.ObjectIdModule;
+import coffeehouse.libraries.modulemesh.EnableModuleMesh;
 import coffeehouse.libraries.security.web.EnableWebSecurity;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
 import coffeehouse.libraries.spring.data.jdbc.core.mapping.ModularJdbcMappingContext;
 import coffeehouse.modules.catalog.EnableCatalogModule;
 import coffeehouse.modules.catalog.data.convert.CatalogConverters;
+import coffeehouse.modules.catalog.domain.ProductId;
 import coffeehouse.modules.order.EnableOrderModule;
 import coffeehouse.modules.order.data.convert.OrderConverters;
+import coffeehouse.modules.order.domain.OrderId;
+import coffeehouse.modules.order.domain.OrderItemId;
 import coffeehouse.modules.user.EnableUserModule;
 import coffeehouse.modules.user.data.convert.UserConverters;
+import coffeehouse.modules.user.domain.UserAccountId;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -22,6 +30,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
@@ -40,6 +49,7 @@ import org.springframework.data.relational.RelationalManagedTypes;
 import org.springframework.data.relational.core.mapping.DefaultNamingStrategy;
 import org.springframework.data.relational.core.mapping.NamingStrategy;
 import org.springframework.stereotype.Controller;
+import org.zalando.jackson.datatype.money.MoneyModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +80,21 @@ public class CoffeehouseServerApplication {
 
     @SpringBootConfiguration
     @EnableAutoConfiguration
+    @EnableModuleMesh
     static class InfrastructureConfiguration extends AbstractJdbcConfiguration {
+        
+        @Bean
+        Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
+            return builder -> builder
+                    .modules(
+                            new Jdk8Module(),
+                            new JavaTimeModule(),
+                            new MoneyModule(),
+                            new ObjectIdModule(UserAccountId.class, ProductId.class, OrderId.class, OrderItemId.class)
+                    )
+                    .failOnEmptyBeans(false)
+                    .failOnUnknownProperties(false);
+        }
 
         @Override
         protected List<?> userConverters() {

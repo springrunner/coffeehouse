@@ -1,6 +1,7 @@
 module coffeehouse.modules.user {
     requires coffeehouse.libraries.base;
     requires coffeehouse.libraries.security;
+    requires coffeehouse.libraries.modulemesh;
     requires coffeehouse.libraries.spring.extensions;
 
     requires java.sql;

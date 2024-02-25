@@ -1,8 +1,12 @@
 package coffeehouse.modules.order;
 
+import coffeehouse.libraries.modulemesh.function.ModuleFunctionRegistry;
+import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
 import coffeehouse.libraries.spring.context.annotation.PublishedBean;
-import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
+import coffeehouse.modules.order.domain.OrderId;
+import coffeehouse.modules.order.domain.service.Orders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +55,20 @@ public @interface EnableOrderModule {
         @Bean
         PublishedBeanRegisterProcessor orderPublishedBeanRegisterProcessor() {
             return new PublishedBeanRegisterProcessor();
+        }
+    }
+
+    @Configuration
+    class OrderModuleMeshConfigurer {
+        
+        @Autowired
+        void registerModuleFunctions(ModuleFunctionRegistry registry, Orders orders) {
+            registry.registerModuleFunction(
+                    "orders/get-order-details",
+                    OrderId.class,
+                    Orders.OrderDetails.class,
+                    orderId -> orders.getOrderDetails(orderId).orElse(null)
+            );
         }
     }
 }

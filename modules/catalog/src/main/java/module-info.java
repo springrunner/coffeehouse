@@ -1,5 +1,6 @@
 module coffeehouse.modules.catalog {
     requires coffeehouse.libraries.base;
+    requires coffeehouse.libraries.modulemesh;
     requires coffeehouse.libraries.spring.extensions;
 
     requires java.sql;
