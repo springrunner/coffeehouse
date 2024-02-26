@@ -6,6 +6,9 @@ import coffeehouse.libraries.modulemesh.EnableModuleMesh;
 import coffeehouse.libraries.security.web.EnableWebSecurity;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
 import coffeehouse.libraries.spring.data.jdbc.core.mapping.ModularJdbcMappingContext;
+import coffeehouse.modules.brew.EnableBrewModule;
+import coffeehouse.modules.brew.data.convert.BrewConverters;
+import coffeehouse.modules.brew.domain.OrderSheetId;
 import coffeehouse.modules.catalog.EnableCatalogModule;
 import coffeehouse.modules.catalog.data.convert.CatalogConverters;
 import coffeehouse.modules.catalog.domain.ProductId;
@@ -73,6 +76,9 @@ public class CoffeehouseServerApplication {
                 .sibling(EnableOrderModule.OrderModuleConfiguration.class)
                 .web(WebApplicationType.NONE)
                 .bannerMode(Banner.Mode.OFF)
+                .sibling(EnableBrewModule.BrewModuleConfiguration.class)
+                .web(WebApplicationType.NONE)
+                .bannerMode(Banner.Mode.OFF)
                 .sibling(WebConfiguration.class)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
@@ -90,7 +96,13 @@ public class CoffeehouseServerApplication {
                             new Jdk8Module(),
                             new JavaTimeModule(),
                             new MoneyModule(),
-                            new ObjectIdModule(UserAccountId.class, ProductId.class, OrderId.class, OrderItemId.class)
+                            new ObjectIdModule(
+                                    UserAccountId.class,
+                                    ProductId.class,
+                                    OrderId.class,
+                                    OrderItemId.class,
+                                    OrderSheetId.class
+                            )
                     )
                     .failOnEmptyBeans(false)
                     .failOnUnknownProperties(false);
@@ -103,6 +115,7 @@ public class CoffeehouseServerApplication {
             converters.addAll(UserConverters.converters());
             converters.addAll(CatalogConverters.converters());
             converters.addAll(OrderConverters.converters());
+            converters.addAll(BrewConverters.converters());
             return converters;
         }
 

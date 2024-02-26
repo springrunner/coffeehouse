@@ -7,6 +7,9 @@ import coffeehouse.libraries.base.lang.Money;
 import coffeehouse.libraries.base.serialize.jackson.ObjectIdModule;
 import coffeehouse.libraries.modulemesh.EnableModuleMesh;
 import coffeehouse.libraries.spring.data.jdbc.core.mapping.ModularJdbcMappingContext;
+import coffeehouse.modules.brew.EnableBrewModule;
+import coffeehouse.modules.brew.data.convert.BrewConverters;
+import coffeehouse.modules.brew.domain.OrderSheetId;
 import coffeehouse.modules.catalog.EnableCatalogModule;
 import coffeehouse.modules.catalog.data.convert.CatalogConverters;
 import coffeehouse.modules.catalog.domain.CategoryId;
@@ -54,6 +57,7 @@ import java.util.*;
 @EnableUserModule
 @EnableCatalogModule
 @EnableOrderModule
+@EnableBrewModule
 @ImportAutoConfiguration(classes = {
         DataSourceAutoConfiguration.class,
         DataSourceTransactionManagerAutoConfiguration.class,
@@ -69,6 +73,7 @@ public class CoffeehouseIntegrationTesting extends AbstractJdbcConfiguration {
         converters.addAll(UserConverters.converters());
         converters.addAll(CatalogConverters.converters());
         converters.addAll(OrderConverters.converters());
+        converters.addAll(BrewConverters.converters());
         return converters;
     }
 
@@ -89,7 +94,13 @@ public class CoffeehouseIntegrationTesting extends AbstractJdbcConfiguration {
                         new Jdk8Module(),
                         new JavaTimeModule(),
                         new MoneyModule(),
-                        new ObjectIdModule(UserAccountId.class, ProductId.class, OrderId.class, OrderItemId.class)
+                        new ObjectIdModule(
+                                UserAccountId.class,
+                                ProductId.class,
+                                OrderId.class,
+                                OrderItemId.class,
+                                OrderSheetId.class
+                        )
                 )
                 .failOnEmptyBeans(false)
                 .failOnUnknownProperties(false);

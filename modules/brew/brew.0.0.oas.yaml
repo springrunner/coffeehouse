@@ -1,0 +1,121 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Coffeehouse Brew APIs
+  description: API for managing brew and interactions in the Coffeehouse system
+  contact:
+    email: springrunner.kr@gmail.com
+servers:
+  - url: http://localhost:8080
+paths:
+  /ordersheets:
+    get:
+      tags:
+        - Staff
+      summary: 
+      operationId: listOrderSheets
+      x-operation-extra-annotation:
+        - '@jakarta.annotation.security.RolesAllowed({"BARISTA", "BOSS"})'
+      responses:
+        '200':
+          description: list of an order-sheets retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrderSheetDetails'
+                required:
+                  - content
+        '400':
+          description: Invalid request
+  /ordersheets/{orderSheetId}:
+    get:
+      tags:
+        - Staff
+      summary: Get the details of an order-sheet
+      operationId: getOrderSheetDetails
+      x-operation-extra-annotation:
+        - '@jakarta.annotation.security.RolesAllowed({"BARISTA", "BOSS"})'
+      parameters:
+        - in: path
+          name: orderSheetId
+          required: true
+          schema:
+            type: string
+          description: The ID of the order-sheet
+      responses:
+        '200':
+          description: details of an order-sheet retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderSheetDetails'
+        '404':
+          description: order-sheet not found
+  /ordersheets/{orderSheetId}/confirmation:
+    put:
+      tags:
+        - Staff
+      summary: Confirm an order-sheet
+      operationId: confirmOrderSheet
+      x-operation-extra-annotation:
+        - '@jakarta.annotation.security.RolesAllowed("BARISTA")'
+      parameters:
+        - in: path
+          name: orderSheetId
+          required: true
+          schema:
+            type: string
+          description: The ID of the order-sheet to be confirmed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                selectedOrderSheetItemIds:
+                  type: array
+                  items:
+                    type: string
+                    description: A list of item IDs that have been selected during the order-sheet
+      responses:
+        '200':
+          description: order-sheet confirmed successfully
+        '404':
+          description: order-sheet not found.
+components:
+  schemas:
+    OrderSheetDetails:
+      type: object
+      properties:
+        orderSheetId:
+          type: string
+        orderStatus:
+          $ref: '#/components/schemas/OrderSheetStatus'
+    OrderSheetStatus:
+      type: object
+      required:
+        - code
+        - text
+      properties:
+        code:
+          type: string
+        text:
+          type: string
+        description:
+          type: string
+  securitySchemes:
+    SessionToken:
+      type: apiKey
+      in: header
+      name: Authorization
+security:
+  - SessionToken: []
+tags:
+  - name: Staff
+    description: Manage service operations

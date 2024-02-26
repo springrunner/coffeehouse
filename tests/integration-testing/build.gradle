@@ -27,6 +27,7 @@ dependencies {
     testImplementation(project(':modules:user'))
     testImplementation(project(':modules:catalog'))
     testImplementation(project(':modules:order'))
+    testImplementation(project(':modules:brew'))
     
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.boot:spring-boot-starter-data-jdbc')
