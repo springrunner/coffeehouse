@@ -1,5 +1,6 @@
 package coffeehouse.modules.order;
 
+import coffeehouse.libraries.modulemesh.event.EnableModuleEventProcessor;
 import coffeehouse.libraries.modulemesh.function.ModuleFunctionRegistry;
 import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
@@ -33,6 +34,7 @@ public @interface EnableOrderModule {
     @Configuration
     @ComponentScan
     @EnableJdbcRepositories
+    @EnableModuleEventProcessor
     class OrderModuleConfiguration {
 
         @Bean

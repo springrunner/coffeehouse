@@ -3,6 +3,7 @@ package coffeehouse.applications.server;
 import coffeehouse.libraries.base.convert.spring.BaseConverters;
 import coffeehouse.libraries.base.serialize.jackson.ObjectIdModule;
 import coffeehouse.libraries.modulemesh.EnableModuleMesh;
+import coffeehouse.libraries.modulemesh.EnableModuleMesh.ModuleEventChannelMode;
 import coffeehouse.libraries.security.web.EnableWebSecurity;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
 import coffeehouse.libraries.spring.data.jdbc.core.mapping.ModularJdbcMappingContext;
@@ -86,7 +87,7 @@ public class CoffeehouseServerApplication {
 
     @SpringBootConfiguration
     @EnableAutoConfiguration
-    @EnableModuleMesh
+    @EnableModuleMesh(moduleEventChannelMode = ModuleEventChannelMode.QUEUE)
     static class InfrastructureConfiguration extends AbstractJdbcConfiguration {
         
         @Bean

@@ -1,9 +1,10 @@
 package coffeehouse.modules.order.domain.service.business;
 
+import coffeehouse.libraries.modulemesh.event.ModuleEventPublisher;
 import coffeehouse.modules.order.domain.OrderId;
 import coffeehouse.modules.order.domain.entity.Order;
 import coffeehouse.modules.order.domain.entity.OrderRepository;
-import coffeehouse.modules.order.domain.service.BarCounter;
+import coffeehouse.modules.order.domain.event.OrderAcceptedEvent;
 import coffeehouse.modules.order.domain.service.OrderAcceptance;
 import coffeehouse.modules.order.domain.service.UnidentifiedOrderException;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,12 @@ import java.util.Objects;
 @Service
 class OrderAcceptanceProcessor implements OrderAcceptance {
 
-    private final BarCounter barCounter;
     private final OrderRepository orderRepository;
+    private final ModuleEventPublisher moduleEventPublisher;
 
-    public OrderAcceptanceProcessor(BarCounter barCounter, OrderRepository orderRepository) {
-        this.barCounter = Objects.requireNonNull(barCounter, "BarCounter must not be null");
+    public OrderAcceptanceProcessor(OrderRepository orderRepository, ModuleEventPublisher moduleEventPublisher) {
         this.orderRepository = Objects.requireNonNull(orderRepository, "OrderRepository must not be null");
+        this.moduleEventPublisher = Objects.requireNonNull(moduleEventPublisher, "ModuleEventPublisher must not be null");
     }
 
     @Override
@@ -32,6 +33,6 @@ class OrderAcceptanceProcessor implements OrderAcceptance {
 
         orderRepository.save(acceptedOrder);
 
-        barCounter.brew(orderId);
+        moduleEventPublisher.publishEvent(new OrderAcceptedEvent(orderId));
     }
 }

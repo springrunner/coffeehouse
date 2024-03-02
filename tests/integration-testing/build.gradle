@@ -33,6 +33,7 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-data-jdbc')
     testImplementation('org.springframework.boot:spring-boot-starter-json')
     testImplementation('org.zalando:jackson-datatype-money')
+    testImplementation('org.awaitility:awaitility')
 
     testCompileOnly('com.google.code.findbugs:jsr305')
     testRuntimeOnly('com.h2database:h2')

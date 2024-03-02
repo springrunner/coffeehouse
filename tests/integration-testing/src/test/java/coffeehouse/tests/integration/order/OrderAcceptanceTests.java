@@ -8,11 +8,13 @@ import coffeehouse.modules.order.domain.entity.OrderStatus;
 import coffeehouse.modules.order.domain.service.OrderAcceptance;
 import coffeehouse.modules.order.domain.service.OrderPlacement;
 import coffeehouse.modules.user.domain.UserAccountId;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,7 +46,9 @@ class OrderAcceptanceTests {
         assertEquals(OrderStatus.ACCEPTED, order.getStatus(), "Order status is not 'ACCEPTED'");
 
         // Check that an OrderSheet has been created when the order is accepted
-        var orderSheet = orderSheetRepository.findByOrderId(orderId).orElse(null);
-        assertNotNull(orderSheet, "OrderSheet should not be null");
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+            var orderSheet = orderSheetRepository.findByOrderId(orderId).orElse(null);
+            assertNotNull(orderSheet, "OrderSheet should not be null");
+        });
     }
 }

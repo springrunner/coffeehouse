@@ -53,7 +53,7 @@ import java.util.*;
  * @author springrunner.kr@gmail.com
  */
 @SpringBootConfiguration
-@EnableModuleMesh
+@EnableModuleMesh(moduleEventChannelMode = EnableModuleMesh.ModuleEventChannelMode.QUEUE)
 @EnableUserModule
 @EnableCatalogModule
 @EnableOrderModule

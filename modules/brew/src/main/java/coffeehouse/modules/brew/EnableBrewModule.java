@@ -1,5 +1,6 @@
 package coffeehouse.modules.brew;
 
+import coffeehouse.libraries.modulemesh.event.EnableModuleEventProcessor;
 import coffeehouse.libraries.modulemesh.function.ModuleFunctionRegistry;
 import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
@@ -34,6 +35,7 @@ public @interface EnableBrewModule {
     @Configuration
     @ComponentScan
     @EnableJdbcRepositories
+    @EnableModuleEventProcessor
     class BrewModuleConfiguration {
 
         @Bean
