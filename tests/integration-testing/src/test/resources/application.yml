@@ -1,0 +1,3 @@
+coffeehouse:
+  order:
+    submit-order-sheet-uri: http://localhost:8080/order-sheet
