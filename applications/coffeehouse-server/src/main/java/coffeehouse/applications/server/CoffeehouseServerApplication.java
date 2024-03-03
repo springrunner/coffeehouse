@@ -52,9 +52,12 @@ import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration
 import org.springframework.data.relational.RelationalManagedTypes;
 import org.springframework.data.relational.core.mapping.DefaultNamingStrategy;
 import org.springframework.data.relational.core.mapping.NamingStrategy;
+import org.springframework.integration.jdbc.lock.DefaultLockRepository;
+import org.springframework.integration.jdbc.lock.JdbcLockRegistry;
 import org.springframework.stereotype.Controller;
 import org.zalando.jackson.datatype.money.MoneyModule;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -87,7 +90,10 @@ public class CoffeehouseServerApplication {
 
     @SpringBootConfiguration
     @EnableAutoConfiguration
-    @EnableModuleMesh(moduleEventChannelMode = ModuleEventChannelMode.QUEUE)
+    @EnableModuleMesh(
+            moduleEventChannelMode = ModuleEventChannelMode.QUEUE,
+            moduleEventOutboxTaskSchedulerPollSize = 4
+    )
     static class InfrastructureConfiguration extends AbstractJdbcConfiguration {
         
         @Bean
@@ -129,6 +135,16 @@ public class CoffeehouseServerApplication {
 
             return mappingContext;
         }
+
+        @Bean
+        public DefaultLockRepository defaultLockRepository(DataSource dataSource) {
+            return new DefaultLockRepository(dataSource);
+        }
+
+        @Bean
+        public JdbcLockRegistry jdbcLockRegistry(DefaultLockRepository defaultLockRepository) {
+            return new JdbcLockRegistry(defaultLockRepository);
+        }        
     }
 
     @SpringBootConfiguration

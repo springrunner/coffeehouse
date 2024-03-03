@@ -31,6 +31,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -44,16 +45,25 @@ import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration
 import org.springframework.data.relational.RelationalManagedTypes;
 import org.springframework.data.relational.core.mapping.DefaultNamingStrategy;
 import org.springframework.data.relational.core.mapping.NamingStrategy;
+import org.springframework.integration.jdbc.lock.DefaultLockRepository;
+import org.springframework.integration.jdbc.lock.JdbcLockRegistry;
 import org.zalando.jackson.datatype.money.MoneyModule;
 
 import javax.money.Monetary;
+import javax.sql.DataSource;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author springrunner.kr@gmail.com
  */
 @SpringBootConfiguration
-@EnableModuleMesh(moduleEventChannelMode = EnableModuleMesh.ModuleEventChannelMode.QUEUE)
+@EnableModuleMesh(
+        moduleEventChannelMode = EnableModuleMesh.ModuleEventChannelMode.QUEUE,
+        moduleEventOutboxTaskInitialDelay = 300,
+        moduleEventOutboxTaskPeriod = 500,
+        moduleEventOutboxTaskUnit = TimeUnit.MILLISECONDS
+)
 @EnableUserModule
 @EnableCatalogModule
 @EnableOrderModule
@@ -63,6 +73,7 @@ import java.util.*;
         DataSourceTransactionManagerAutoConfiguration.class,
         JdbcTemplateAutoConfiguration.class,
         JacksonAutoConfiguration.class,
+        IntegrationAutoConfiguration.class,
 })
 public class CoffeehouseIntegrationTesting extends AbstractJdbcConfiguration {
 
@@ -85,6 +96,16 @@ public class CoffeehouseIntegrationTesting extends AbstractJdbcConfiguration {
         mappingContext.setManagedTypes(jdbcManagedTypes);
 
         return mappingContext;
+    }
+
+    @Bean
+    public DefaultLockRepository defaultLockRepository(DataSource dataSource) {
+        return new DefaultLockRepository(dataSource);
+    }
+
+    @Bean
+    public JdbcLockRegistry jdbcLockRegistry(DefaultLockRepository defaultLockRepository) {
+        return new JdbcLockRegistry(defaultLockRepository);
     }
 
     @Bean

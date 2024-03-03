@@ -1,6 +1,12 @@
 package coffeehouse.modules.order;
 
 import coffeehouse.libraries.modulemesh.event.EnableModuleEventProcessor;
+import coffeehouse.libraries.modulemesh.event.inbox.ModuleEventInboxRegistry;
+import coffeehouse.libraries.modulemesh.event.outbox.ModuleEventOutboxAccessorRegistry;
+import coffeehouse.libraries.modulemesh.event.outbox.ModuleEventOutboxRegistry;
+import coffeehouse.libraries.modulemesh.event.serializer.ObjectModuleEventSerde;
+import coffeehouse.libraries.modulemesh.event.spring.jdbc.JdbcModuleEventInbox;
+import coffeehouse.libraries.modulemesh.event.spring.jdbc.JdbcModuleEventOutbox;
 import coffeehouse.libraries.modulemesh.function.ModuleFunctionRegistry;
 import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
@@ -48,6 +54,28 @@ public @interface EnableOrderModule {
 
             return initializer;
         }
+
+        @Bean
+        JdbcModuleEventOutbox orderModuleEventOutbox(DataSource dataSource) {
+            return new JdbcModuleEventOutbox(
+                    event -> event.getClass().getPackageName().startsWith("coffeehouse.modules.order"),
+                    "ORDER",
+                    dataSource,
+                    ObjectModuleEventSerde.INSTANCE,
+                    ObjectModuleEventSerde.INSTANCE
+            );
+        }
+
+        @Bean
+        JdbcModuleEventInbox orderModuleEventInbox(DataSource dataSource) {
+            return new JdbcModuleEventInbox(
+                    event -> event.getClass().getPackageName().startsWith("coffeehouse.modules.order"),
+                    "ORDER",
+                    dataSource,
+                    ObjectModuleEventSerde.INSTANCE,
+                    ObjectModuleEventSerde.INSTANCE
+            );
+        }        
         
         @PublishedBean
         LimitedBeanFactoryAccessor orderDelegatedBeanFactoryAccessor() {
@@ -62,6 +90,24 @@ public @interface EnableOrderModule {
 
     @Configuration
     class OrderModuleMeshConfigurer {
+        
+        @Autowired
+        void configureModuleEventOutbox(
+                ModuleEventOutboxRegistry moduleEventOutboxRegistry,
+                ModuleEventOutboxAccessorRegistry moduleEventOutboxAccessorRegistry,
+                JdbcModuleEventOutbox orderModuleEventOutbox
+        ) {
+            moduleEventOutboxRegistry.registerModuleEventOutbox(orderModuleEventOutbox);
+            moduleEventOutboxAccessorRegistry.registerModuleEventOutboxAccessor(orderModuleEventOutbox);
+        }
+
+        @Autowired
+        void configureModuleEventInbox(
+                ModuleEventInboxRegistry moduleEventInboxRegistry,
+                JdbcModuleEventInbox orderModuleEventInbox
+        ) {
+            moduleEventInboxRegistry.registerModuleEventInbox(orderModuleEventInbox);
+        }        
         
         @Autowired
         void registerModuleFunctions(ModuleFunctionRegistry registry, Orders orders) {

@@ -1,10 +1,15 @@
 package coffeehouse.libraries.modulemesh;
 
+import coffeehouse.libraries.modulemesh.event.EnableModuleEventProcessor;
 import coffeehouse.libraries.modulemesh.event.ModuleEventChannel;
+import coffeehouse.libraries.modulemesh.event.inbox.ModuleEventInbox;
+import coffeehouse.libraries.modulemesh.event.outbox.ModuleEventOutbox;
+import coffeehouse.libraries.modulemesh.event.outbox.support.OutboxModuleEventChannel;
 import coffeehouse.libraries.modulemesh.event.spring.ApplicationModuleEventChannels;
 import coffeehouse.libraries.modulemesh.event.spring.ApplicationModuleEventInvokers;
 import coffeehouse.libraries.modulemesh.event.spring.ApplicationModuleEventInvokers.ModuleEventInvoker;
-import coffeehouse.libraries.modulemesh.event.EnableModuleEventProcessor;
+import coffeehouse.libraries.modulemesh.event.spring.InboxModuleEventInvoker;
+import coffeehouse.libraries.modulemesh.event.spring.ApplicationOutboxModuleEventProcessor;
 import coffeehouse.libraries.modulemesh.function.DefaultModuleFunctionOperations;
 import coffeehouse.libraries.modulemesh.function.DefaultModuleFunctionRegistry;
 import coffeehouse.libraries.modulemesh.function.ModuleFunctionOperations;
@@ -15,18 +20,19 @@ import coffeehouse.libraries.modulemesh.mapper.jackson.JacksonObjectMapper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportAware;
+import org.springframework.context.annotation.*;
+import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.integration.support.locks.LockRegistry;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 import java.util.Objects;
-
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author springrunner.kr@gmail.com
@@ -42,6 +48,14 @@ public @interface EnableModuleMesh {
 
     ModuleEventChannelMode moduleEventChannelMode() default ModuleEventChannelMode.DIRECT;
 
+    int moduleEventOutboxTaskSchedulerPollSize() default 1;
+    
+    long moduleEventOutboxTaskInitialDelay() default 5;
+
+    long moduleEventOutboxTaskPeriod() default 3;
+
+    TimeUnit moduleEventOutboxTaskUnit() default TimeUnit.SECONDS;
+    
     enum ModuleEventChannelMode {DIRECT, QUEUE}
 
     @Configuration(proxyBeanMethods = false)
@@ -52,7 +66,7 @@ public @interface EnableModuleMesh {
             return new JacksonObjectMapper(mapperProvider.getIfAvailable());
         }
     }
-    
+
     @Configuration(proxyBeanMethods = false)
     class FunctionConfiguration {
 
@@ -77,7 +91,11 @@ public @interface EnableModuleMesh {
     class EventConfiguration implements ImportAware {
 
         private ModuleEventChannelMode moduleEventChannelMode;
-
+        private Integer moduleEventOutboxTaskSchedulerPollSize;
+        private Long moduleEventOutboxTaskInitialDelay;
+        private Long moduleEventOutboxTaskPeriod;
+        private TimeUnit moduleEventOutboxTaskUnit;
+        
         @Bean
         ModuleEventChannel moduleEventChannel(ApplicationEventPublisher applicationEventPublisher) {
             return switch (Objects.requireNonNull(moduleEventChannelMode, "ModuleEventChannelMode must not be null")) {
@@ -86,9 +104,38 @@ public @interface EnableModuleMesh {
             };
         }
 
+        @Primary
+        @Bean
+        OutboxModuleEventChannel outboxModuleEventChannel(List<ModuleEventOutbox> outboxes, ModuleEventChannel moduleEventChannel) {
+            return new OutboxModuleEventChannel(outboxes, moduleEventChannel);
+        }
+
+        @Bean
+        ApplicationOutboxModuleEventProcessor outboxModuleEventProcessor(
+                PlatformTransactionManager transactionManager,
+                LockRegistry lockRegistry,
+                ApplicationEventMulticaster applicationEventMulticaster
+        ) {
+            return new ApplicationOutboxModuleEventProcessor(
+                    applicationEventMulticaster,
+                    transactionManager,
+                    lockRegistry,
+                    moduleEventOutboxTaskSchedulerPollSize,
+                    moduleEventOutboxTaskInitialDelay,
+                    moduleEventOutboxTaskPeriod,
+                    moduleEventOutboxTaskUnit
+            );
+        }
+
         @Bean
         ModuleEventInvoker moduleEventInvoker() {
             return ApplicationModuleEventInvokers.simple();
+        }
+
+        @Primary
+        @Bean
+        InboxModuleEventInvoker inboxModuleEventInvoker(List<ModuleEventInbox> moduleEventInboxes, ModuleEventInvoker moduleEventInvoker) {
+            return new InboxModuleEventInvoker(moduleEventInboxes, moduleEventInvoker);
         }
 
         @Override
@@ -96,6 +143,10 @@ public @interface EnableModuleMesh {
             var attributes = Objects.requireNonNull(metadata.getAnnotationAttributes(EnableModuleMesh.class.getName()));
 
             moduleEventChannelMode = (ModuleEventChannelMode) attributes.get("moduleEventChannelMode");
+            moduleEventOutboxTaskSchedulerPollSize = (Integer) attributes.get("moduleEventOutboxTaskSchedulerPollSize");
+            moduleEventOutboxTaskInitialDelay = (Long) attributes.get("moduleEventOutboxTaskInitialDelay");
+            moduleEventOutboxTaskPeriod = (Long) attributes.get("moduleEventOutboxTaskPeriod");
+            moduleEventOutboxTaskUnit = (TimeUnit) attributes.get("moduleEventOutboxTaskUnit");
         }
     }
 }

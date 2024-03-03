@@ -33,6 +33,6 @@ class OrderAcceptanceProcessor implements OrderAcceptance {
 
         orderRepository.save(acceptedOrder);
 
-        moduleEventPublisher.publishEvent(new OrderAcceptedEvent(orderId));
+        moduleEventPublisher.publishEvent(OrderAcceptedEvent.of(orderId));
     }
 }

@@ -32,6 +32,8 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.boot:spring-boot-starter-data-jdbc')
     testImplementation('org.springframework.boot:spring-boot-starter-json')
+    testImplementation('org.springframework.boot:spring-boot-starter-integration')
+    testImplementation('org.springframework.integration:spring-integration-jdbc')
     testImplementation('org.zalando:jackson-datatype-money')
     testImplementation('org.awaitility:awaitility')
 

@@ -1,6 +1,12 @@
 package coffeehouse.modules.brew;
 
 import coffeehouse.libraries.modulemesh.event.EnableModuleEventProcessor;
+import coffeehouse.libraries.modulemesh.event.inbox.ModuleEventInboxRegistry;
+import coffeehouse.libraries.modulemesh.event.outbox.ModuleEventOutboxAccessorRegistry;
+import coffeehouse.libraries.modulemesh.event.outbox.ModuleEventOutboxRegistry;
+import coffeehouse.libraries.modulemesh.event.serializer.ObjectModuleEventSerde;
+import coffeehouse.libraries.modulemesh.event.spring.jdbc.JdbcModuleEventInbox;
+import coffeehouse.libraries.modulemesh.event.spring.jdbc.JdbcModuleEventOutbox;
 import coffeehouse.libraries.modulemesh.function.ModuleFunctionRegistry;
 import coffeehouse.libraries.spring.beans.factory.config.PublishedBeanRegisterProcessor;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
@@ -50,6 +56,28 @@ public @interface EnableBrewModule {
             return initializer;
         }
 
+        @Bean
+        JdbcModuleEventOutbox brewModuleEventOutbox(DataSource dataSource) {
+            return new JdbcModuleEventOutbox(
+                    event -> event.getClass().getPackageName().startsWith("coffeehouse.modules.brew"),
+                    "BREW",
+                    dataSource,
+                    ObjectModuleEventSerde.INSTANCE,
+                    ObjectModuleEventSerde.INSTANCE
+            );
+        }
+
+        @Bean
+        JdbcModuleEventInbox brewModuleEventInbox(DataSource dataSource) {
+            return new JdbcModuleEventInbox(
+                    event -> event.getClass().getPackageName().startsWith("coffeehouse.modules.brew"),
+                    "BREW",
+                    dataSource,
+                    ObjectModuleEventSerde.INSTANCE,
+                    ObjectModuleEventSerde.INSTANCE
+            );
+        }        
+
         @PublishedBean
         LimitedBeanFactoryAccessor brewDelegatedBeanFactoryAccessor() {
             return new LimitedBeanFactoryAccessor();
@@ -63,6 +91,24 @@ public @interface EnableBrewModule {
 
     @Configuration
     class BrewModuleMeshConfigurer {
+
+        @Autowired
+        void configureModuleEventOutbox(
+                ModuleEventOutboxRegistry moduleEventOutboxRegistry,
+                ModuleEventOutboxAccessorRegistry moduleEventOutboxAccessorRegistry,
+                JdbcModuleEventOutbox brewModuleEventOutbox
+        ) {
+            moduleEventOutboxRegistry.registerModuleEventOutbox(brewModuleEventOutbox);
+            moduleEventOutboxAccessorRegistry.registerModuleEventOutboxAccessor(brewModuleEventOutbox);
+        }
+
+        @Autowired
+        void configureModuleEventInbox(
+                ModuleEventInboxRegistry moduleEventInboxRegistry,
+                JdbcModuleEventInbox brewModuleEventInbox
+        ) {
+            moduleEventInboxRegistry.registerModuleEventInbox(brewModuleEventInbox);
+        }
 
         @Autowired
         void registerModuleFunctions(ModuleFunctionRegistry registry, OrderSheetSubmission orderSheetSubmission) {

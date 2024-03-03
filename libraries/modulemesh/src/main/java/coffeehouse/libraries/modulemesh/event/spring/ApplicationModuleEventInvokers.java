@@ -10,7 +10,7 @@ public abstract class ApplicationModuleEventInvokers {
     public static ModuleEventInvoker simple() {
         return (moduleEvent, moduleEventHandler) -> moduleEventHandler.run();
     }
-
+    
     public interface ModuleEventInvoker {
 
         void invoke(ModuleEvent moduleEvent, Runnable moduleEventHandler);

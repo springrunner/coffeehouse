@@ -46,9 +46,12 @@ class OrderAcceptanceTests {
         assertEquals(OrderStatus.ACCEPTED, order.getStatus(), "Order status is not 'ACCEPTED'");
 
         // Check that an OrderSheet has been created when the order is accepted
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-            var orderSheet = orderSheetRepository.findByOrderId(orderId).orElse(null);
-            assertNotNull(orderSheet, "OrderSheet should not be null");
-        });
+        Awaitility.await()
+                .pollDelay(1, TimeUnit.SECONDS)
+                .pollInterval(500, TimeUnit.MILLISECONDS)
+                .atMost(3, TimeUnit.SECONDS).untilAsserted(() -> {
+                    var orderSheet = orderSheetRepository.findByOrderId(orderId).orElse(null);
+                    assertNotNull(orderSheet, "OrderSheet should not be null");
+                });
     }
 }

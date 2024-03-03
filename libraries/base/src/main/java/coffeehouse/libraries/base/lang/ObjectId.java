@@ -1,11 +1,12 @@
 package coffeehouse.libraries.base.lang;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * @author springrunner.kr@gmail.com
  */
-public abstract class ObjectId<T> {
+public abstract class ObjectId<T> implements Serializable {
 
     private final T value;
 
