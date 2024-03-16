@@ -31,10 +31,12 @@ dependencies {
     testImplementation(project(':modules:brew'))
     
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.boot:spring-boot-starter-web')
     testImplementation('org.springframework.boot:spring-boot-starter-data-jdbc')
     testImplementation('org.springframework.boot:spring-boot-starter-json')
     testImplementation('org.springframework.boot:spring-boot-starter-integration')
     testImplementation('org.springframework.integration:spring-integration-jdbc')
+    testImplementation('org.springframework.boot:spring-boot-docker-compose')
     testImplementation('org.zalando:jackson-datatype-money')
     testImplementation('org.awaitility:awaitility')
 

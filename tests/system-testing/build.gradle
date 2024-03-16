@@ -22,6 +22,7 @@ dependencyManagement {
 dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.boot:spring-boot-docker-compose')
+    testImplementation('org.springframework.amqp:spring-rabbit')
     testImplementation('io.rest-assured:rest-assured')
     testImplementation('net.datafaker:datafaker')
 }

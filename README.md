@@ -303,12 +303,14 @@ classDiagram
 - Java 21
 - Spring Framework 6.x
 - Spring Boot 3.x
+- Spring AMQP 3.x 
 - Spring Data JDBC 3.x
 - Spring Integration 6.x
 - Spring Cloud Gateway 4.x
 - Jackson 2.x
 - [Gradle](https://gradle.org) (build tools)
 - [H2 Database](http://www.h2database.com/html/main.html) (database)
+- [RabbitMQ](https://www.rabbitmq.com) (message broker)
 - [Docker Compose](https://docs.docker.com/compose/)
 
 ### 아키텍처 의사 결정 기록 Architectural Decision Records (ADRs)

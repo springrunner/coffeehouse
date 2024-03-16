@@ -86,9 +86,6 @@ public class CoffeehouseServerApplication {
                 .sibling(EnableOrderModule.OrderModuleConfiguration.class)
                 .web(WebApplicationType.NONE)
                 .bannerMode(Banner.Mode.OFF)
-                .sibling(EnableBrewModule.BrewModuleConfiguration.class)
-                .web(WebApplicationType.NONE)
-                .bannerMode(Banner.Mode.OFF)
                 .sibling(WebConfiguration.class)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
@@ -97,7 +94,7 @@ public class CoffeehouseServerApplication {
     @SpringBootConfiguration
     @EnableAutoConfiguration
     @EnableModuleMesh(
-            moduleEventChannelMode = ModuleEventChannelMode.QUEUE,
+            moduleEventChannelMode = ModuleEventChannelMode.RABBIT,
             moduleEventOutboxTaskSchedulerPollSize = 4
     )
     static class InfrastructureConfiguration extends AbstractJdbcConfiguration {
@@ -128,7 +125,6 @@ public class CoffeehouseServerApplication {
             converters.addAll(UserConverters.converters());
             converters.addAll(CatalogConverters.converters());
             converters.addAll(OrderConverters.converters());
-            converters.addAll(BrewConverters.converters());
             return converters;
         }
 
@@ -141,7 +137,7 @@ public class CoffeehouseServerApplication {
 
             return mappingContext;
         }
-
+        
         @Bean
         public DefaultLockRepository defaultLockRepository(DataSource dataSource) {
             return new DefaultLockRepository(dataSource);
@@ -150,7 +146,7 @@ public class CoffeehouseServerApplication {
         @Bean
         public JdbcLockRegistry jdbcLockRegistry(DefaultLockRepository defaultLockRepository) {
             return new JdbcLockRegistry(defaultLockRepository);
-        }        
+        }
     }
 
     @SpringBootConfiguration

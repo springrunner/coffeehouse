@@ -6,9 +6,11 @@ services:
       dockerfile: applications/coffeehouse-edge-server/Dockerfile
     depends_on:
       - coffeehouse-server
+      - coffeehouse-brew-server
     environment:
       SPRING_PROFILES_ACTIVE: local
       COFFEEHOUSE_SERVER_HOST: coffeehouse-server
+      COFFEEHOUSE_BREW_SERVER_HOST: coffeehouse-brew-server
     networks:
       - coffeehouse
     ports:
@@ -17,15 +19,46 @@ services:
     build:
       context: ../../
       dockerfile: applications/coffeehouse-server/Dockerfile
+    depends_on:
+      - rabbitmq
     environment:
-      - SPRING_PROFILES_ACTIVE=local
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_RABBITMQ_ADDRESSES: amqp://rabbitmq:5672
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "9080" ]
+      test: ["CMD", "nc", "-z", "localhost", "9080"]
       interval: 5s
       timeout: 1s
       retries: 6
       start_period: 1m
     networks:
       - coffeehouse
+  coffeehouse-brew-server:
+    build:
+      context: ../../
+      dockerfile: applications/coffeehouse-brew-server/Dockerfile
+    depends_on:
+      - rabbitmq
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_RABBITMQ_ADDRESSES: amqp://rabbitmq:5672
+      COFFEEHOUSE_SERVER_HOST: coffeehouse-server
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9040"]
+      interval: 5s
+      timeout: 1s
+      retries: 6
+      start_period: 1m
+    networks:
+      - coffeehouse
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_DEFAULT_USER: coffeehouse
+      RABBITMQ_DEFAULT_PASS: password
+    networks:
+      - coffeehouse
+    ports:
+      - "5672:5672"
 networks:
   coffeehouse:

@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author springrunner.kr@gmail.com
  */
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class OrderAcceptanceTests {
 
     @Autowired OrderPlacement orderPlacement;

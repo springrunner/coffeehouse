@@ -16,10 +16,24 @@ services:
       dockerfile: applications/coffeehouse-server/Dockerfile
     depends_on:
       - h2database
+      - rabbitmq
     deploy:
       replicas: 2
     env_file:
       - .env    
+    networks:
+      - coffeehouse
+  coffeehouse-brew-server:
+    build:
+      context: ./
+      dockerfile: applications/coffeehouse-brew-server/Dockerfile
+    depends_on:
+      - h2database
+      - rabbitmq    
+    deploy:
+      replicas: 2
+    env_file:
+      - .env
     networks:
       - coffeehouse
   h2database:
@@ -32,6 +46,20 @@ services:
       - "50081:81"
     volumes:
       - ./.docker/h2database:/opt/h2-data
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_DEFAULT_USER: coffeehouse
+      RABBITMQ_DEFAULT_PASS: password
+    networks:
+      - coffeehouse
+    ports:
+      - "55672:5672"
+      - "55673:15672"
+    volumes:
+      - ./.env-rabbitmq.enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./.docker/rabbitmq/lib/:/var/lib/rabbitmq/
   nginx:
     image: nginx:stable-alpine3.17
     command: /bin/sh -c "envsubst < /etc/nginx/conf.d/nginx.conf.tmpl > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"

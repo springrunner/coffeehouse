@@ -31,12 +31,18 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
@@ -47,6 +53,7 @@ import org.springframework.data.relational.core.mapping.DefaultNamingStrategy;
 import org.springframework.data.relational.core.mapping.NamingStrategy;
 import org.springframework.integration.jdbc.lock.DefaultLockRepository;
 import org.springframework.integration.jdbc.lock.JdbcLockRegistry;
+import org.springframework.web.client.RestTemplate;
 import org.zalando.jackson.datatype.money.MoneyModule;
 
 import javax.money.Monetary;
@@ -74,6 +81,11 @@ import java.util.concurrent.TimeUnit;
         JdbcTemplateAutoConfiguration.class,
         JacksonAutoConfiguration.class,
         IntegrationAutoConfiguration.class,
+        ServletWebServerFactoryAutoConfiguration.class,
+        DispatcherServletAutoConfiguration.class,
+        WebMvcAutoConfiguration.class,
+        RestTemplateAutoConfiguration.class,
+        RabbitAutoConfiguration.class,
 })
 public class CoffeehouseIntegrationTesting extends AbstractJdbcConfiguration {
 
@@ -106,6 +118,11 @@ public class CoffeehouseIntegrationTesting extends AbstractJdbcConfiguration {
     @Bean
     public JdbcLockRegistry jdbcLockRegistry(DefaultLockRepository defaultLockRepository) {
         return new JdbcLockRegistry(defaultLockRepository);
+    }
+
+    @Bean
+    RestTemplate defaultRestTemplate(RestTemplateBuilder builder) {
+        return builder.build();
     }
 
     @Bean

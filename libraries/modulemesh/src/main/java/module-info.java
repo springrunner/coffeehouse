@@ -7,6 +7,8 @@ module coffeehouse.libraries.modulemesh {
     requires spring.jdbc;
     requires spring.tx;
     requires spring.integration.core;
+    requires spring.amqp;
+    requires spring.rabbit;
     requires com.fasterxml.jackson.databind;
     requires org.slf4j;
 

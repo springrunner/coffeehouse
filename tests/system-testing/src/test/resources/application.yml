@@ -5,6 +5,10 @@ system-testing:
     base-uri: http://localhost:8080
 
 spring:
+  rabbitmq:
+    addresses: amqp://localhost:5672
+    username: coffeehouse
+    password: password
   docker:
     compose:
       enabled: true

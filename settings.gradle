@@ -12,6 +12,8 @@ include 'applications:coffeehouse-edge-server'
 findProject(':applications:coffeehouse-edge-server')?.name = 'coffeehouse-edge-server'
 include 'applications:coffeehouse-server'
 findProject(':applications:coffeehouse-server')?.name = 'coffeehouse-server'
+include 'applications:coffeehouse-brew-server'
+findProject(':applications:coffeehouse-brew-server')?.name = 'coffeehouse-brew-server'
 
 include 'modules:user'
 findProject(':modules:user')?.name = 'user'

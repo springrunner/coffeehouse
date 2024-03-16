@@ -1,18 +1,19 @@
+coffeehouse:
+  order:
+    server-uri: http://${COFFEEHOUSE_SERVER_HOST:localhost}:${COFFEEHOUSE_SERVER_PORT:9080}
+
 modulemesh:
   event:
     rabbit:
       default-exchange: amq.fanout
-      queue-names: coffeehouse-event-stream.server
+      queue-names: coffeehouse-event-stream.brew-server
 
 spring:
-  integration:
-    jdbc:
-      initialize-schema: always
   rabbitmq:
     connection-timeout: 10
 
 server:
-  port: ${COFFEEHOUSE_SERVER_PORT:9080} 
+  port: ${COFFEEHOUSE_BREW_SERVER_PORT:9040}
 
 logging:
   group:

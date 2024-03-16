@@ -1,8 +1,24 @@
+coffeehouse:
+  order:
+    server-uri: http://localhost:38080
+
 spring:
   integration:
     jdbc:
       initialize-schema: always
-      
+  rabbitmq:
+    addresses: amqp://localhost:5672
+    username: coffeehouse
+    password: password
+  docker:
+    compose:
+      enabled: true
+      skip:
+        in-tests: false
+
+server:
+  port: 38080
+
 logging:
   group:
     application: coffeehouse.applications
