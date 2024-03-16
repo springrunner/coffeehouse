@@ -1,5 +1,15 @@
 version: "3.8"
 services:
+  coffeehouse-edge-server:
+    build:
+      context: ./
+      dockerfile: applications/coffeehouse-edge-server/Dockerfile
+    deploy:
+      replicas: 1
+    env_file:
+      - .env
+    networks:
+      - coffeehouse
   coffeehouse-server:
     build:
       context: ./
@@ -10,8 +20,6 @@ services:
       replicas: 2
     env_file:
       - .env    
-    links:
-      - h2database
     networks:
       - coffeehouse
   h2database:

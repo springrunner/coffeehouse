@@ -1,12 +1,31 @@
 version: "3.8"
 services:
+  coffeehouse-edge-server:
+    build:
+      context: ../../
+      dockerfile: applications/coffeehouse-edge-server/Dockerfile
+    depends_on:
+      - coffeehouse-server
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      COFFEEHOUSE_SERVER_HOST: coffeehouse-server
+    networks:
+      - coffeehouse
+    ports:
+      - "8080:8080"
   coffeehouse-server:
     build:
       context: ../../
       dockerfile: applications/coffeehouse-server/Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "9080" ]
+      interval: 5s
+      timeout: 1s
+      retries: 6
+      start_period: 1m
     networks:
       - coffeehouse
-    ports:
-      - "8080:8080"       
 networks:
   coffeehouse:

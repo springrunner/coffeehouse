@@ -4,6 +4,7 @@ import coffeehouse.libraries.base.convert.spring.BaseConverters;
 import coffeehouse.libraries.base.serialize.jackson.ObjectIdModule;
 import coffeehouse.libraries.modulemesh.EnableModuleMesh;
 import coffeehouse.libraries.modulemesh.EnableModuleMesh.ModuleEventChannelMode;
+import coffeehouse.libraries.security.authentication.jwt.Auth0JSONWebTokenAuthentication;
 import coffeehouse.libraries.security.web.EnableWebSecurity;
 import coffeehouse.libraries.spring.beans.factory.support.LimitedBeanFactoryAccessor;
 import coffeehouse.libraries.spring.data.jdbc.core.mapping.ModularJdbcMappingContext;
@@ -46,6 +47,9 @@ import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfigu
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.jdbc.core.mapping.JdbcMappingContext;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
@@ -57,7 +61,9 @@ import org.springframework.integration.jdbc.lock.JdbcLockRegistry;
 import org.springframework.stereotype.Controller;
 import org.zalando.jackson.datatype.money.MoneyModule;
 
+import javax.crypto.spec.SecretKeySpec;
 import javax.sql.DataSource;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -87,7 +93,7 @@ public class CoffeehouseServerApplication {
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
     }
-
+    
     @SpringBootConfiguration
     @EnableAutoConfiguration
     @EnableModuleMesh(
@@ -166,6 +172,15 @@ public class CoffeehouseServerApplication {
     static class WebConfiguration implements BeanFactoryPostProcessor {
 
         private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        @Bean
+        @Order(Ordered.HIGHEST_PRECEDENCE)
+        Auth0JSONWebTokenAuthentication<UserAccountId> auth0JSONWebTokenAuthentication(Environment environment) {
+            var secretString = "coffeehouse";
+            var secretKey = new SecretKeySpec(secretString.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+
+            return new Auth0JSONWebTokenAuthentication<>(secretKey, UserAccountId::new);
+        }
 
         @Override
         public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {

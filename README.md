@@ -305,6 +305,7 @@ classDiagram
 - Spring Boot 3.x
 - Spring Data JDBC 3.x
 - Spring Integration 6.x
+- Spring Cloud Gateway 4.x
 - Jackson 2.x
 - [Gradle](https://gradle.org) (build tools)
 - [H2 Database](http://www.h2database.com/html/main.html) (database)

@@ -8,6 +8,8 @@ pluginManagement {
 
 rootProject.name = 'coffeehouse'
 
+include 'applications:coffeehouse-edge-server'
+findProject(':applications:coffeehouse-edge-server')?.name = 'coffeehouse-edge-server'
 include 'applications:coffeehouse-server'
 findProject(':applications:coffeehouse-server')?.name = 'coffeehouse-server'
 

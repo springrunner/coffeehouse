@@ -8,10 +8,12 @@ module coffeehouse.libraries.security {
     requires spring.web;
     requires spring.webmvc;
     requires spring.jcl;
+    requires com.auth0.jwt;
     requires com.fasterxml.jackson.databind;
 
     exports coffeehouse.libraries.security;
     exports coffeehouse.libraries.security.authentication;
+    exports coffeehouse.libraries.security.authentication.jwt;
     exports coffeehouse.libraries.security.web.context;
     exports coffeehouse.libraries.security.web.filter;
     exports coffeehouse.libraries.security.web.servlet;

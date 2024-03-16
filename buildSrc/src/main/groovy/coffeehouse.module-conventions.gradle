@@ -19,6 +19,7 @@ dependencyManagement {
         dependency("com.google.code.findbugs:jsr305:$jsr305Version")
         dependency("org.javamoney:moneta:$monetaVersion")
         dependency("net.datafaker:datafaker:$datafakerVersion")
+        dependency("com.auth0:java-jwt:$auth0JavaJWTVersion")
     }
 }
 

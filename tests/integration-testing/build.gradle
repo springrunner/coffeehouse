@@ -18,6 +18,7 @@ dependencyManagement {
         dependency("com.google.code.findbugs:jsr305:$jsr305Version")
         dependency("org.javamoney:moneta:$monetaVersion")
         dependency("org.zalando:jackson-datatype-money:$jacksonDatatypeMoney")
+        dependency("com.auth0:java-jwt:$auth0JavaJWTVersion")
     }
 }
 

@@ -80,6 +80,40 @@ paths:
                 required:
                   - accessToken
       security: []
+  /accounts/authenticate:
+    get:
+      summary: Account authenticate
+      operationId: authenticateAccount
+      parameters:
+        - in: header
+          name: X-AccessToken
+          schema:
+            type: string
+          required: true      
+      responses:
+        '200':
+          description: Authenticate successful, authentication provided.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  principal:
+                    type: string
+                    description: principal for authenticated sessions
+                  username:
+                    type: string
+                    description: username for authenticated sessions
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                    description: roles for authenticated sessions                    
+                required:
+                  - principal
+                  - username
+                  - roles
+      security: []      
 components:
   schemas:
     CustomerDetails:
