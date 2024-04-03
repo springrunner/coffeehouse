@@ -2,6 +2,7 @@ package coffeehouse.tests.integration;
 
 import coffeehouse.modules.brew.EnableBrewModule;
 import coffeehouse.modules.order.EnableOrderModule;
+import coffeehouse.modules.user.EnableUserModule;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -14,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 @EnableOrderModule
 @EnableBrewModule
+@EnableUserModule
 public class CoffeehouseIntegrationTestingApplication {
 
     public static void main(String[] args) {
