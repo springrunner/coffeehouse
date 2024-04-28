@@ -1,3 +1,7 @@
 coffeehouse:
   order:
     submit-order-sheet-uri: http://localhost:8080/order-sheet
+  brew :
+    notify-brew-complete-uri : http://localhost:8080/order/brew-completed
+  user :
+    notify-brew-complete-uri : http://localhost:8080/user/brew-completed
