@@ -25,7 +25,7 @@ dependencies {
     api(project(':libraries:spring-extensions'))
     implementation('org.springframework:spring-context')
     implementation('org.springframework:spring-webmvc')
-    
+    implementation('org.springframework:spring-messaging')
     testImplementation('org.springframework:spring-test')
     testImplementation('org.junit.jupiter:junit-jupiter')
     testImplementation('org.mockito:mockito-junit-jupiter')

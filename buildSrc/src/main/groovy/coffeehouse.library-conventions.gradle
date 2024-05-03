@@ -21,7 +21,7 @@ dependencyManagement {
 
 dependencies {
     api('org.slf4j:slf4j-api')
-
+    implementation('org.springframework:spring-messaging')
     testImplementation('org.junit.jupiter:junit-jupiter')
 }
 
