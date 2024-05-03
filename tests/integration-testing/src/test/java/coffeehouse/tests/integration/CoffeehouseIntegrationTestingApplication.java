@@ -1,6 +1,5 @@
 package coffeehouse.tests.integration;
 
-import coffeehouse.libraries.message.DirectChannel;
 import coffeehouse.modules.brew.EnableBrewModule;
 import coffeehouse.modules.order.EnableOrderModule;
 import coffeehouse.modules.user.EnableUserModule;
@@ -8,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.integration.channel.DirectChannel;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.web.client.RestTemplate;
 
