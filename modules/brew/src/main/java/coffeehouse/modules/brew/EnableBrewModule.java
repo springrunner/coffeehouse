@@ -7,7 +7,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
+import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.http.dsl.Http;
 import org.springframework.messaging.MessageChannel;
 
 import java.lang.annotation.ElementType;
@@ -28,6 +32,16 @@ public @interface EnableBrewModule {
     class BrewModuleConfiguration {
 
         @Bean
+        MessageChannel brewCompletedNotifyUserChannel() {
+            return new DirectChannel();
+        }
+
+        @Bean
+        MessageChannel brewCompletedNotifyOrderChannel() {
+            return new DirectChannel();
+        }
+
+        @Bean
         IntegrationFlow requestBrewIntegrationFlow(OrderSheetSubmission orderSheetSubmission, MessageChannel barCounterChannel) {
             var logger = LoggerFactory.getLogger(getClass());
 
@@ -37,6 +51,26 @@ public @interface EnableBrewModule {
                         logger.info("Receive brew-request-command-message: %s".formatted(commandMessage));
                         orderSheetSubmission.submit(new OrderSheetSubmission.OrderSheetForm(commandMessage.orderId()));
                     }).get();
+        }
+
+        @Bean
+        IntegrationFlow notifyUserIntegrationFlow(MessageChannel brewCompletedNotifyUserChannel, Environment environment) {
+            var brewCompletedNotificationUserUri = environment.getRequiredProperty("coffeehouse.user.notify-brew-complete-uri");
+            return IntegrationFlow.from(brewCompletedNotifyUserChannel)
+                    .handle(
+                            Http.outboundChannelAdapter(brewCompletedNotificationUserUri)
+                                    .httpMethod(HttpMethod.POST)
+                    ).get();
+        }
+
+        @Bean
+        IntegrationFlow notifyBrewIntegrationFlow(MessageChannel brewCompletedNotifyOrderChannel, Environment environment) {
+            var brewCompletedNotificationUserUri = environment.getRequiredProperty("coffeehouse.brew.notify-brew-complete-uri");
+            return IntegrationFlow.from(brewCompletedNotifyOrderChannel)
+                    .handle(
+                            Http.outboundChannelAdapter(brewCompletedNotificationUserUri)
+                                    .httpMethod(HttpMethod.POST)
+                    ).get();
         }
     }
 }
