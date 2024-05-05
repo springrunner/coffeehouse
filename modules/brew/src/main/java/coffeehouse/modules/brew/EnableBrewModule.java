@@ -1,8 +1,5 @@
 package coffeehouse.modules.brew;
 
-import coffeehouse.modules.brew.domain.service.OrderSheetSubmission;
-import coffeehouse.modules.order.domain.message.BrewRequestCommandMessage;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,18 +36,6 @@ public @interface EnableBrewModule {
         @Bean
         MessageChannel brewCompletedNotifyOrderChannel() {
             return new DirectChannel();
-        }
-
-        @Bean
-        IntegrationFlow requestBrewIntegrationFlow(OrderSheetSubmission orderSheetSubmission, MessageChannel brewRequestChannel) {
-            var logger = LoggerFactory.getLogger(getClass());
-
-            return IntegrationFlow.from(brewRequestChannel)
-                    .handle(message -> {
-                        var commandMessage = (BrewRequestCommandMessage) message.getPayload();
-                        logger.info("Receive brew-request-command-message: %s".formatted(commandMessage));
-                        orderSheetSubmission.submit(new OrderSheetSubmission.OrderSheetForm(commandMessage.orderId()));
-                    }).get();
         }
 
         @Bean

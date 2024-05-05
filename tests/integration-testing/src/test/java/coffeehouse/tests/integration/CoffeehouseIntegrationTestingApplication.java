@@ -6,15 +6,17 @@ import coffeehouse.modules.user.EnableUserModule;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.integration.amqp.dsl.Amqp;
+import org.springframework.integration.amqp.inbound.AmqpInboundChannelAdapter;
+import org.springframework.integration.amqp.outbound.AmqpOutboundEndpoint;
+import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
-import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,7 +32,7 @@ public class CoffeehouseIntegrationTestingApplication {
     public static void main(String[] args) {
         SpringApplication.run(CoffeehouseIntegrationTestingApplication.class, args);
     }
-    
+
     @Bean
     RestTemplate defaultRestTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder.build();
@@ -54,26 +56,33 @@ public class CoffeehouseIntegrationTestingApplication {
     }
 
     @Bean
-    public IntegrationFlow amqpIntegrationFlow(AmqpTemplate amqpTemplate, DirectChannel barCounterChannel) {
-        return IntegrationFlow.from(barCounterChannel)
-                .handle(
-                        Amqp.outboundAdapter(amqpTemplate)
-                                .routingKey("brew")
-                ).get();
+    @ServiceActivator(inputChannel = "barCounterChannel")
+    public AmqpOutboundEndpoint amqpOutboundEndpoint(AmqpTemplate amqpTemplateContentTypeConverter) {
+        var amqpOutboundEndpoint = new AmqpOutboundEndpoint(amqpTemplateContentTypeConverter);
+        amqpOutboundEndpoint.setRoutingKey("brew");
+        return amqpOutboundEndpoint;
     }
 
     @Bean
-    DirectChannel brewRequestChannel() {
+    MessageChannel brewRequestChannel() {
         return new DirectChannel();
     }
 
     @Bean
-    public IntegrationFlow amqpInbound(ConnectionFactory connectionFactory,
-                                       DirectChannel brewRequestChannel
+    public SimpleMessageListenerContainer amqpContainer(ConnectionFactory connectionFactory) {
+        var container = new SimpleMessageListenerContainer(connectionFactory);
+        container.setQueueNames("brew");
+        return container;
+    }
+
+    @Bean
+    public AmqpInboundChannelAdapter inboundChannelAdapter(
+            SimpleMessageListenerContainer amqpContainer,
+            MessageChannel brewRequestChannel
     ) {
-        return IntegrationFlow.from(
-                Amqp.inboundAdapter(connectionFactory, "brew")
-                        .messageConverter(jsonMessageConverter())
-        ).handle(message -> brewRequestChannel.send(message)).get();
+        var amqpInboundChannelAdapter = new AmqpInboundChannelAdapter(amqpContainer);
+        amqpInboundChannelAdapter.setMessageConverter(jsonMessageConverter());
+        amqpInboundChannelAdapter.setOutputChannel(brewRequestChannel);
+        return amqpInboundChannelAdapter;
     }
 }
