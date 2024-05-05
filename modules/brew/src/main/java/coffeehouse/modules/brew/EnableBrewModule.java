@@ -42,10 +42,10 @@ public @interface EnableBrewModule {
         }
 
         @Bean
-        IntegrationFlow requestBrewIntegrationFlow(OrderSheetSubmission orderSheetSubmission, MessageChannel barCounterChannel) {
+        IntegrationFlow requestBrewIntegrationFlow(OrderSheetSubmission orderSheetSubmission, MessageChannel brewRequestChannel) {
             var logger = LoggerFactory.getLogger(getClass());
 
-            return IntegrationFlow.from(barCounterChannel)
+            return IntegrationFlow.from(brewRequestChannel)
                     .handle(message -> {
                         var commandMessage = (BrewRequestCommandMessage) message.getPayload();
                         logger.info("Receive brew-request-command-message: %s".formatted(commandMessage));

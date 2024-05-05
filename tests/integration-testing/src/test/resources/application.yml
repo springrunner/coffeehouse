@@ -5,3 +5,9 @@ coffeehouse:
     notify-brew-complete-uri: http://localhost:8080/order/brew-completed
   user:
     notify-brew-complete-uri: http://localhost:8080/user/brew-completed
+
+spring:
+  rabbitmq:
+    addresses: amqp://localhost:5672
+    username: coffeehouse
+    password: password

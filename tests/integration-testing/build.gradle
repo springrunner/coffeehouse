@@ -23,6 +23,7 @@ dependencyManagement {
 dependencies {
     implementation(project(':libraries:spring-extensions'))
     implementation('org.springframework.integration:spring-integration-core')
+    implementation('org.springframework.integration:spring-integration-amqp')
     implementation(project(':modules:order'))
     implementation(project(':modules:brew'))
     implementation(project(':modules:user'))
