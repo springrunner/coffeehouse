@@ -15,8 +15,11 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.amqp.inbound.AmqpInboundChannelAdapter;
 import org.springframework.integration.amqp.outbound.AmqpOutboundEndpoint;
+import org.springframework.integration.annotation.Router;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
+import org.springframework.integration.channel.QueueChannel;
+import org.springframework.integration.router.HeaderValueRouter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.web.client.RestTemplate;
 
@@ -69,6 +72,19 @@ public class CoffeehouseIntegrationTestingApplication {
     }
 
     @Bean
+    MessageChannel amqpInboundChannel() {
+        return new QueueChannel();
+    }
+
+    @Bean
+    @Router(inputChannel = "amqpInboundChannel")
+    public HeaderValueRouter messageRouter() {
+        var router = new HeaderValueRouter("amqp_receivedRoutingKey");
+        router.setChannelMapping("brew", "brewRequestChannel");
+        return router;
+    }
+
+    @Bean
     public SimpleMessageListenerContainer amqpContainer(ConnectionFactory connectionFactory) {
         var container = new SimpleMessageListenerContainer(connectionFactory);
         container.setQueueNames("brew");
@@ -78,11 +94,11 @@ public class CoffeehouseIntegrationTestingApplication {
     @Bean
     public AmqpInboundChannelAdapter inboundChannelAdapter(
             SimpleMessageListenerContainer amqpContainer,
-            MessageChannel brewRequestChannel
+            MessageChannel amqpInboundChannel
     ) {
         var amqpInboundChannelAdapter = new AmqpInboundChannelAdapter(amqpContainer);
         amqpInboundChannelAdapter.setMessageConverter(jsonMessageConverter());
-        amqpInboundChannelAdapter.setOutputChannel(brewRequestChannel);
+        amqpInboundChannelAdapter.setOutputChannel(amqpInboundChannel);
         return amqpInboundChannelAdapter;
     }
 }
