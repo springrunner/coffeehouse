@@ -27,8 +27,6 @@ public class BrewCompleteProcessor implements BrewComplete {
         // ----------------------------------------------------------
         // Verify brew information with the order iD and completed it
         // ----------------------------------------------------------
-
-        notification.notifyUser(orderId);
-        notification.notifyOrder(orderId);
+        notification.notify(orderId);
     }
 }

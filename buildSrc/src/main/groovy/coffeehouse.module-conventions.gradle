@@ -22,7 +22,7 @@ dependencyManagement {
 
 dependencies {
     api('org.slf4j:slf4j-api')
-    api(project(':libraries:spring-extensions'))
+    implementation('com.fasterxml.jackson.core:jackson-databind')
     implementation('org.springframework:spring-context')
     implementation('org.springframework:spring-webmvc')
     implementation('org.springframework.integration:spring-integration-core')

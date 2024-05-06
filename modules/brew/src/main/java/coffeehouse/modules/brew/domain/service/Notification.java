@@ -7,7 +7,6 @@ import coffeehouse.modules.order.domain.OrderId;
  */
 public interface Notification {
 
-    void notifyUser(OrderId orderId);
+    void notify(OrderId orderId);
 
-    void notifyOrder(OrderId orderId);
 }

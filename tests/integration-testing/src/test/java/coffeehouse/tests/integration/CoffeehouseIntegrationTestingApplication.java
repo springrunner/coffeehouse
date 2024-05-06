@@ -18,6 +18,7 @@ import org.springframework.integration.amqp.outbound.AmqpOutboundEndpoint;
 import org.springframework.integration.annotation.Router;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
+import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.router.HeaderValueRouter;
 import org.springframework.messaging.MessageChannel;
@@ -45,6 +46,7 @@ public class CoffeehouseIntegrationTestingApplication {
     RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
         var rabbitAdmin = new RabbitAdmin(connectionFactory);
         rabbitAdmin.declareQueue(new Queue("brew"));
+        rabbitAdmin.declareQueue(new Queue("brewCompleted"));
         return rabbitAdmin;
     }
 
@@ -59,6 +61,11 @@ public class CoffeehouseIntegrationTestingApplication {
     }
 
     @Bean
+    DirectChannel notifyBrewCompletedEventMessageChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
     @ServiceActivator(inputChannel = "barCounterChannel")
     public AmqpOutboundEndpoint amqpOutboundEndpoint(AmqpTemplate amqpTemplateContentTypeConverter) {
         var amqpOutboundEndpoint = new AmqpOutboundEndpoint(amqpTemplateContentTypeConverter);
@@ -67,8 +74,21 @@ public class CoffeehouseIntegrationTestingApplication {
     }
 
     @Bean
+    @ServiceActivator(inputChannel = "notifyBrewCompletedEventMessageChannel")
+    public AmqpOutboundEndpoint brewCompletedMessageOutboundEndpoint(AmqpTemplate amqpTemplateContentTypeConverter) {
+        var amqpOutboundEndpoint = new AmqpOutboundEndpoint(amqpTemplateContentTypeConverter);
+        amqpOutboundEndpoint.setRoutingKey("brewCompleted");
+        return amqpOutboundEndpoint;
+    }
+
+    @Bean
     MessageChannel brewRequestChannel() {
         return new DirectChannel();
+    }
+
+    @Bean
+    MessageChannel brewCompletedEventPublishSubscribeChannel() {
+        return new PublishSubscribeChannel();
     }
 
     @Bean
@@ -81,13 +101,14 @@ public class CoffeehouseIntegrationTestingApplication {
     public HeaderValueRouter messageRouter() {
         var router = new HeaderValueRouter("amqp_receivedRoutingKey");
         router.setChannelMapping("brew", "brewRequestChannel");
+        router.setChannelMapping("brewCompleted", "brewCompletedEventPublishSubscribeChannel");
         return router;
     }
 
     @Bean
     public SimpleMessageListenerContainer amqpContainer(ConnectionFactory connectionFactory) {
         var container = new SimpleMessageListenerContainer(connectionFactory);
-        container.setQueueNames("brew");
+        container.setQueueNames("brew", "brewCompleted");
         return container;
     }
 

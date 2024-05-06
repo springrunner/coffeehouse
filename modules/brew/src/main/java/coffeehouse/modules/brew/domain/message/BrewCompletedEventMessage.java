@@ -5,5 +5,5 @@ import coffeehouse.modules.order.domain.OrderId;
 /**
  * @author springrunner.kr@gmail.com
  */
-public record BrewCompletedMessage(OrderId orderId) {
+public record BrewCompletedEventMessage(OrderId orderId) {
 }
