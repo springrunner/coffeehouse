@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: coffeehouse-rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_DEFAULT_USER: coffeehouse
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - ./.env-rabbitmq.enabled_plugins:/etc/rabbitmq/enabled_plugins

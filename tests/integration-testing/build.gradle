@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management'
+}
+
+group = "$projectGroup"
+version = "$projectVersion"
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+    }
+    dependencies {
+        dependency("com.google.code.findbugs:jsr305:$jsr305Version")
+        dependency("net.datafaker:datafaker:$datafakerVersion")
+    }
+}
+
+dependencies {
+    implementation(project(':libraries:spring-extensions'))
+    
+    implementation(project(':modules:order'))
+    implementation(project(':modules:brew'))
+    implementation(project(':modules:user'))
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.boot:spring-boot-starter-web')
+    testImplementation('org.awaitility:awaitility')
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of("$javaVersion"))
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "$javaOptionEncoding"
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}

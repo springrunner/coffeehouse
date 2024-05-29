@@ -1,0 +1,8 @@
+plugins {
+    id 'coffeehouse.module-conventions'
+}
+
+dependencies {
+    implementation(project(':modules:order'))
+    implementation project(path: ':modules:user')
+}

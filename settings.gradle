@@ -1,0 +1,25 @@
+pluginManagement {
+    plugins {
+        id 'org.springframework.boot' version "$springBootVersion"
+        id 'io.spring.dependency-management' version "$springDependencyManagementVersion"
+    }
+}
+
+rootProject.name = 'coffeehouse'
+
+include 'applications:coffeehouse-server'
+findProject(':applications:coffeehouse-server')?.name = 'coffeehouse-server'
+
+include 'modules:order'
+findProject(':modules:order')?.name = 'order'
+include 'modules:brew'
+findProject(':modules:brew')?.name = 'brew'
+include 'modules:user'
+findProject(':modules:user')?.name = 'user'
+
+
+include 'libraries:spring-extensions'
+findProject(':libraries:spring-extensions')?.name = 'spring-extensions'
+
+include 'tests:integration-testing'
+findProject(':tests:integration-testing')?.name = 'integration-testing'
